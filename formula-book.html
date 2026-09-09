@@ -1,0 +1,1826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#221E19">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Formula Book">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+<title>Formula Book</title>
+<style>
+:root{
+  --ink:#221E19;
+  --ink2:#3A352D;
+  --paper:#F5F4F1;
+  --card:#FFFFFF;
+  --line:#DCD9D2;
+  --dim:#6E685E;
+  --sack:#2F4E8C;        /* flour-sack blue: water & primary actions */
+  --sack-soft:#E4EAF5;
+  --rye:#8C5A19;         /* pre-fermented flour bronze */
+  --rye-soft:#F1E7D6;
+  --danger:#9C3325;
+  --radius:8px;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  --disp:"Futura","Futura PT","Century Gothic","Avenir Next","Trebuchet MS",sans-serif;
+  --body:"Futura","Futura PT","Century Gothic","Avenir Next",-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.45}
+#app{max-width:780px;margin:0 auto;padding:env(safe-area-inset-top,0px) 14px calc(90px + env(safe-area-inset-bottom,0px))}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit;-webkit-tap-highlight-color:transparent}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:6px;padding:9px 10px;width:100%}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--sack);outline-offset:1px}
+input[type=number]{-moz-appearance:textfield}
+input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+
+/* ---------- type ---------- */
+.disp{font-family:var(--disp);text-transform:uppercase;letter-spacing:.05em;font-weight:700}
+.eyebrow{font-family:var(--disp);text-transform:uppercase;letter-spacing:.14em;font-size:11px;color:var(--dim);font-weight:700}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* ---------- header ---------- */
+header.top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:18px 2px 14px}
+header.top h1{font-family:var(--disp);text-transform:uppercase;letter-spacing:.06em;font-size:22px;line-height:1.1}
+header.top .sub{font-size:12px;color:var(--dim);margin-top:2px}
+.backlink{font-family:var(--disp);text-transform:uppercase;letter-spacing:.1em;font-size:12px;font-weight:700;color:var(--sack);padding:8px 0;display:inline-block}
+
+/* ---------- buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:42px;padding:8px 16px;border-radius:var(--radius);font-family:var(--disp);text-transform:uppercase;letter-spacing:.05em;font-size:13px;font-weight:700;background:var(--sack);color:#fff}
+.btn.ghost{background:transparent;color:var(--sack);border:1.5px solid var(--sack)}
+.btn.quiet{background:transparent;color:var(--dim);border:1.5px solid var(--line)}
+.btn.danger{background:transparent;color:var(--danger);border:1.5px solid var(--danger)}
+.btn.small{min-height:34px;padding:4px 12px;font-size:12px}
+.btnrow{display:flex;flex-wrap:wrap;gap:8px}
+
+/* ---------- library ---------- */
+.libgrid{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+.reccard{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px;display:block;width:100%;text-align:left}
+.reccard h3{font-family:var(--disp);text-transform:uppercase;letter-spacing:.04em;font-size:17px}
+.reccard .cat{font-size:12px;color:var(--dim);margin-top:1px}
+.reccard .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.chip{font-family:var(--mono);font-size:12px;padding:3px 8px;border-radius:99px;background:var(--paper);border:1px solid var(--line)}
+.chip.hyd{background:var(--sack-soft);border-color:var(--sack);color:var(--sack);font-weight:600}
+.chip.pff{background:var(--rye-soft);border-color:var(--rye);color:var(--rye);font-weight:600}
+.empty{padding:36px 16px;text-align:center;color:var(--dim);border:1.5px dashed var(--line);border-radius:var(--radius)}
+
+/* ---------- tag strip (signature) ---------- */
+.tagstrip{background:var(--ink);color:#F2EFE9;border-radius:var(--radius);padding:14px 14px 12px;margin:12px 0;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;position:relative;overflow:hidden}
+.tagstrip::after{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:repeating-linear-gradient(90deg,var(--sack) 0 14px,transparent 14px 22px)}
+.tag .v{font-family:var(--mono);font-size:clamp(17px,4.6vw,26px);font-weight:600;line-height:1.1}
+.tag .v.blue{color:#9BB9EA}
+.tag .v.bronze{color:#D8A45B}
+.tag .l{font-family:var(--disp);text-transform:uppercase;letter-spacing:.12em;font-size:9.5px;color:#A39C90;margin-top:3px;font-weight:700}
+.hydbar{grid-column:1/-1;height:5px;background:#3A352D;border-radius:3px;overflow:hidden;margin-top:2px}
+.hydbar i{display:block;height:100%;background:var(--sack)}
+.scalednote{grid-column:1/-1;font-size:11px;color:#D8A45B;font-family:var(--mono)}
+
+/* ---------- sections & cards ---------- */
+section.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px;margin:12px 0}
+section.card>h2{font-family:var(--disp);text-transform:uppercase;letter-spacing:.1em;font-size:13px;font-weight:700;color:var(--ink2);padding-bottom:9px;border-bottom:1px solid var(--line);margin-bottom:11px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+section.card>h2 .hint{font-family:var(--body);text-transform:none;letter-spacing:0;font-weight:400;font-size:12px;color:var(--dim)}
+.fieldgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fieldgrid .full{grid-column:1/-1}
+label.f{display:block;font-size:12px;color:var(--dim);margin-bottom:4px}
+
+/* ---------- ingredient rows ---------- */
+.ingrow{display:grid;grid-template-columns:minmax(0,1fr) 84px 96px 34px;gap:6px;margin-bottom:7px;align-items:center}
+.ingrow.liq{grid-template-columns:minmax(0,1fr) 70px 52px 88px 34px}
+.ingrow input.g{text-align:right;font-family:var(--mono)}
+.ingrow select{padding:9px 4px;font-size:14px}
+.xbtn{width:34px;height:38px;border-radius:6px;color:var(--dim);border:1px solid var(--line);font-size:16px;line-height:1}
+.addrow{margin-top:4px}
+.subtot{font-family:var(--mono);font-size:13px;color:var(--dim);text-align:right;padding:4px 2px 0}
+
+/* ---------- tables ---------- */
+table.formula{width:100%;border-collapse:collapse;font-size:14.5px}
+table.formula th{font-family:var(--disp);text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;color:var(--dim);text-align:left;padding:6px 6px;border-bottom:1.5px solid var(--ink)}
+table.formula th.r,table.formula td.r{text-align:right}
+table.formula td{padding:7px 6px;border-bottom:1px solid var(--line)}
+table.formula td.r{font-family:var(--mono)}
+table.formula tr.totalrow td{border-top:2px solid var(--ink);border-bottom:none;font-weight:700}
+table.formula tr.hydrow td{border-bottom:none;color:var(--sack);font-weight:700}
+table.formula tr.sub td{color:var(--dim);font-size:13px}
+.tagline{font-size:12px;color:var(--dim);margin-top:8px}
+
+/* ---------- scale panel ---------- */
+.scalegrid{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:end}
+.scalegrid .or{grid-column:1/-1;text-align:center;font-family:var(--disp);text-transform:uppercase;letter-spacing:.14em;font-size:11px;color:var(--dim);padding:2px 0}
+.factornote{margin-top:10px;font-family:var(--mono);font-size:13px;color:var(--rye)}
+
+/* ---------- process ---------- */
+.procgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.procgrid .full{grid-column:1/-1}
+textarea{min-height:70px;resize:vertical}
+
+/* ---------- sheet (print view) ---------- */
+.sheet{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px 18px;margin-top:12px}
+.sheet h1{font-family:var(--disp);text-transform:uppercase;letter-spacing:.04em;font-size:24px}
+.sheet .meta{font-family:var(--mono);font-size:12.5px;color:var(--dim);margin-top:3px}
+.sheet h2{font-family:var(--disp);text-transform:uppercase;letter-spacing:.12em;font-size:12.5px;margin:18px 0 7px;border-bottom:1.5px solid var(--ink);padding-bottom:4px}
+.sheet .procline{font-size:13.5px;padding:3px 0;display:flex;gap:8px}
+.sheet .procline b{font-family:var(--disp);text-transform:uppercase;letter-spacing:.08em;font-size:11px;min-width:118px;color:var(--ink2);padding-top:2px}
+.sheetstats{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;padding:10px 12px;background:var(--paper);border-radius:6px}
+.sheetstats div .v{font-family:var(--mono);font-weight:700;font-size:17px}
+.sheetstats div .v.blue{color:var(--sack)}
+.sheetstats div .v.bronze{color:var(--rye)}
+.sheetstats div .l{font-family:var(--disp);text-transform:uppercase;letter-spacing:.1em;font-size:9.5px;color:var(--dim)}
+
+/* ---------- levain builder blocks ---------- */
+.buildblock{margin-bottom:14px;padding:12px 12px 8px;border-radius:6px;border-left:4px solid}
+.buildblock table.formula td{border-bottom-color:rgba(140,105,30,.28)}
+.buildblock .eyebrow{color:#7A5A14}
+
+/* ---------- gold-tinted formula cards ---------- */
+section.card.gold1{background:rgba(214,150,30,.07);border-left:4px solid rgba(163,108,15,.35)}
+section.card.gold2{background:rgba(214,150,30,.22);border-left:4px solid rgba(163,108,15,.85)}
+.gold1 table.formula td,.gold2 table.formula td{border-bottom-color:rgba(140,105,30,.28)}
+.gold1>h2,.gold2>h2{border-bottom-color:rgba(140,105,30,.35)}
+
+/* ---------- misc ---------- */
+.banner{background:var(--rye-soft);border:1px solid var(--rye);color:var(--rye);border-radius:var(--radius);padding:10px 12px;font-size:13.5px;margin:10px 0}
+.footerbar{position:fixed;bottom:0;left:0;right:0;background:linear-gradient(transparent,var(--paper) 30%);padding:18px 14px calc(16px + env(safe-area-inset-bottom,0px));display:flex;justify-content:center;gap:8px;pointer-events:none}
+.footerbar .btn{pointer-events:auto;box-shadow:0 2px 10px rgba(34,30,25,.18)}
+.hiddenfile{display:none}
+
+@media (max-width:560px){
+  .ingrow{grid-template-columns:minmax(0,1fr) 74px 88px 32px}
+  .ingrow.liq{grid-template-columns:minmax(0,1fr) 58px 46px 78px 30px}
+  .tagstrip{grid-template-columns:repeat(2,1fr)}
+}
+@media (prefers-reduced-motion:no-preference){
+  .reccard{transition:border-color .15s}
+  .reccard:active{border-color:var(--sack)}
+}
+@media print{
+  body{background:#fff}
+  #app{max-width:none;padding:0}
+  .no-print,.footerbar,header.top{display:none!important}
+  .sheet{border:none;padding:0;margin:0}
+  .sheetstats{border:1px solid #999}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<input type="file" id="importFile" class="hiddenfile" accept="application/json">
+<script>
+"use strict";
+/* =============== storage =============== */
+const LS_KEY = "formulaBook.v1";
+let storageOk = true;
+try {
+  localStorage.setItem("__fb_probe__", "1");
+  localStorage.removeItem("__fb_probe__");
+} catch (e) { storageOk = false; }
+
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+
+function seedRecipe(){
+  return {
+    id: uid(),
+    name: "Open-Crumb Table Loaf",
+    category: "Sourdough",
+    yieldLoafG: 850,
+    yieldCount: 20,
+    ingredients: [
+      { id: uid(), name: "Bread flour", grams: 8000, type: "flour" },
+      { id: uid(), name: "Water", grams: 5600, type: "liquid" },
+      { id: uid(), name: "Salt", grams: 190, type: "salt" }
+    ],
+    levain: {
+      enabled: true,
+      rows: [
+        { id: uid(), name: "Bread flour", grams: 1600, type: "flour" },
+        { id: uid(), name: "Water", grams: 1600, type: "liquid" }
+      ],
+      starterGrams: 320,
+      starterHydration: 100
+    },
+    soakers: [],
+    process: {
+      mix: "4 min low / 3 min medium (spiral)",
+      doughTemp: "78°F target",
+      bulk: "4.5 hr @ 76–78°F",
+      folds: "3 coil folds — 30 / 60 / 90 min",
+      divide: "Divide 850g, light preshape, 20 min rest",
+      shape: "Batard, seam-side up in banneton",
+      proof: "Retard 12–14 hr @ 38°F",
+      bake: "Deck 480°F — 20 min steam, 20–24 min dry",
+      steam: "Full steam at load, vent at 20 min"
+    },
+    notes: "Example formula — edit or delete. Starter flour/water are counted in true totals."
+  };
+}
+
+function blankRecipe(){
+  return {
+    id: uid(), name: "", category: "",
+    yieldLoafG: null, yieldCount: null,
+    ingredients: [
+      { id: uid(), name: "Bread flour", grams: null, type: "flour" },
+      { id: uid(), name: "Water", grams: null, type: "liquid" },
+      { id: uid(), name: "Salt", grams: null, type: "salt" }
+    ],
+    levain: { enabled: false, rows: [], starterGrams: null, starterHydration: 100 },
+    soakers: [],
+    process: { mix:"", doughTemp:"", bulk:"", folds:"", divide:"", shape:"", proof:"", bake:"", steam:"" },
+    notes: ""
+  };
+}
+
+function loadDB(){
+  if (storageOk) {
+    try {
+      const raw = localStorage.getItem(LS_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch(e) {}
+  }
+  return { recipes: [seedRecipe()] };
+}
+let db = loadDB();
+
+function defaultLevain(){
+  return { id: uid(), name: "", target: 3520, surplus: 100, hydration: 100,
+    starterGrams: 50, starterHydration: 100, builds: 2, inoculation: null,
+    readyAt: "", hoursPerBuild: null,
+    flours: [{ id: uid(), name: "Bread flour", pct: 100 }] };
+}
+if (!db.levains){
+  db.levains = [];
+  if (db.lb){
+    const lv = Object.assign(defaultLevain(), db.lb);
+    lv.name = lv.name || "Levain";
+    db.levains.push(lv);
+    delete db.lb;
+  }
+}
+if (!db.levains.length){
+  const lv = defaultLevain();
+  lv.name = "Table loaf levain";
+  db.levains.push(lv);
+}
+
+let saveTimer = null;
+function save(){
+  if (!storageOk) return;
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    try { localStorage.setItem(LS_KEY, JSON.stringify(db)); } catch(e) {}
+  }, 250);
+}
+
+/* =============== state =============== */
+const ui = { view: "library", recipeId: null, factor: 1, hydTarget: null, pffTarget: null, levHydTarget: null, undo: null };
+
+function snapshotForUndo(r, label){
+  ui.undo = { recipeId: r.id, label, data: JSON.parse(JSON.stringify(r)) };
+}
+function undoBannerHTML(r){
+  if (!ui.undo || ui.undo.recipeId !== r.id) return "";
+  return `<div class="banner no-print" style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:12px">
+    <span>Last change: ${esc(ui.undo.label)}</span>
+    <button class="btn small" data-action="undo" style="flex:none">Undo</button>
+  </div>`;
+}
+
+function currentRecipe(){ return db.recipes.find(r => r.id === ui.recipeId) || null; }
+
+/* =============== math =============== */
+const TYPES = ["flour","liquid","salt","inclusion","other"];
+const TYPE_LABEL = { flour:"Flour", liquid:"Liquid", salt:"Salt", inclusion:"Inclusion", other:"Other" };
+
+const WATER_PRESETS = [
+  ["buttermilk",88],["heavy cream",58],["whipping cream",58],["double cream",52],
+  ["sour cream",71],["half and half",80],["half-and-half",80],["half & half",80],
+  ["creme fraiche",58],["crème fraîche",58],
+  ["whole milk",87],["skim milk",91],["2% milk",89],["milk",87],
+  ["egg white",90],["egg yolk",50],["egg",75],
+  ["yogurt",85],["honey",17],["molasses",22],["maple syrup",32],
+  ["melted butter",16],["butter",16],["oil",0],["beer",92],["juice",88],
+  ["cream",58],["ice",100],["water",100]
+];
+function presetFor(name){
+  const s = (name || "").toLowerCase();
+  for (const [k, v] of WATER_PRESETS){ if (s.includes(k)) return v; }
+  return 100;
+}
+function wpOf(row){
+  const v = parseFloat(row.waterPct);
+  return (isFinite(v) && v >= 0) ? Math.min(200, v) : 100;
+}
+
+function n(v){ const x = parseFloat(v); return isFinite(x) && x > 0 ? x : 0; }
+
+function starterSplit(grams, hyd){
+  const g = n(grams), h = n(hyd);
+  if (!g) return { flour: 0, water: 0 };
+  const flour = g / (1 + h/100);
+  return { flour, water: g - flour };
+}
+
+function compute(r){
+  let flour = 0, water = 0, preFlour = 0, dough = 0;
+  const agg = new Map();
+  function addAgg(name, grams, type, order){
+    const key = (name || "").trim().toLowerCase() || "(unnamed)";
+    const cur = agg.get(key);
+    if (cur) { cur.grams += grams; }
+    else agg.set(key, { name: (name||"").trim() || "(unnamed)", grams, type, order });
+  }
+  function absorb(rows, isLevain){
+    (rows||[]).forEach(row => {
+      const g = n(row.grams);
+      if (!g) { if((row.name||"").trim()) addAgg(row.name, 0, row.type, typeOrder(row.type)); return; }
+      dough += g;
+      if (row.type === "flour"){ flour += g; if (isLevain) preFlour += g; }
+      else if (row.type === "liquid"){ water += g * wpOf(row) / 100; }
+      addAgg(row.name, g, row.type, typeOrder(row.type));
+    });
+  }
+  function typeOrder(t){ return { flour:0, liquid:1, salt:2, inclusion:4, other:5 }[t] ?? 5; }
+
+  absorb(r.ingredients, false);
+
+  let levainTotal = 0, starterF = 0, starterW = 0;
+  if (r.levain && r.levain.enabled){
+    absorb(r.levain.rows, true);
+    levainTotal = (r.levain.rows||[]).reduce((s,x)=>s+n(x.grams),0);
+    const sp = starterSplit(r.levain.starterGrams, r.levain.starterHydration);
+    starterF = sp.flour; starterW = sp.water;
+    const sg = n(r.levain.starterGrams);
+    if (sg){
+      flour += sp.flour; water += sp.water; preFlour += sp.flour;
+      dough += sg; levainTotal += sg;
+      // fold the starter's flour & water into the matching aggregated rows
+      const levFlourRow = (r.levain.rows||[]).filter(x => x.type === "flour" && (x.name||"").trim())
+        .sort((a,b) => n(b.grams) - n(a.grams))[0];
+      const levLiqRow = (r.levain.rows||[]).filter(x => x.type === "liquid" && (x.name||"").trim())
+        .sort((a,b) => n(b.grams) - n(a.grams))[0];
+      if (sp.flour) addAgg(levFlourRow ? levFlourRow.name : "Flour", sp.flour, "flour", 0);
+      if (sp.water) addAgg(levLiqRow ? levLiqRow.name : "Water", sp.water, "liquid", 1);
+    }
+  }
+
+  const soakerTotals = [];
+  (r.soakers||[]).forEach(s => {
+    absorb(s.rows, false);
+    soakerTotals.push({ id: s.id, name: s.name, total: (s.rows||[]).reduce((t,x)=>t+n(x.grams),0) });
+  });
+
+  const hyd = flour ? (water/flour)*100 : 0;
+  const pff = flour ? (preFlour/flour)*100 : 0;
+
+  const rows = Array.from(agg.values()).sort((a,b)=> a.order - b.order || b.grams - a.grams);
+
+  return { flour, water, hyd, pff, dough, levainTotal, starterF, starterW, soakerTotals, rows };
+}
+
+function fg(g, factor){ return Math.round(g * factor).toLocaleString(); }
+function fp(p){ return (Math.round(p*10)/10).toFixed(1); }
+
+/* =============== html helpers =============== */
+function esc(s){ return String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function attr(s){ return esc(s); }
+
+/* =============== renderers =============== */
+const app = document.getElementById("app");
+
+function render(scrollTop = true){
+  if (ui.view === "library") renderLibrary();
+  else if (ui.view === "recipe") renderRecipe();
+  else if (ui.view === "sheet") renderSheet();
+  else if (ui.view === "lblib") renderLBLib();
+  else if (ui.view === "lb") renderLB();
+  else if (ui.view === "lbsheet") renderLBSheet();
+  else if (ui.view === "bakeday") renderBakeDay();
+  if (scrollTop) window.scrollTo(0, 0);
+}
+
+function rerenderInPlace(){
+  const y = window.scrollY;
+  render(false);
+  window.scrollTo(0, y);
+}
+
+function storageBanner(){
+  return storageOk ? "" :
+    `<div class="banner no-print">Saving is unavailable in this preview. Download this file and open it in your phone or computer's browser — recipes will then save automatically.</div>`;
+}
+
+function renderLibrary(){
+  const cards = db.recipes.map(r => {
+    const c = compute(r);
+    return `<button class="reccard" data-action="open" data-id="${attr(r.id)}">
+      <h3>${esc(r.name) || "Untitled formula"}</h3>
+      ${r.category ? `<div class="cat">${esc(r.category)}</div>` : ""}
+      <div class="chips">
+        <span class="chip hyd num">${fp(c.hyd)}% hyd</span>
+        ${c.pff > 0 ? `<span class="chip pff num">${fp(c.pff)}% PFF</span>` : ""}
+        <span class="chip num">${fg(c.dough,1)} g dough</span>
+      </div>
+    </button>`;
+  }).join("");
+
+  app.innerHTML = `
+    <header class="top">
+      <div>
+        <h1>Formula Book</h1>
+        <div class="sub">Baker's percentages, true hydration, batch scaling</div>
+      </div>
+    </header>
+    ${storageBanner()}
+    <div class="libgrid">
+      ${cards || `<div class="empty">No formulas yet. Start your first one below.</div>`}
+    </div>
+    <section class="card no-print">
+      <h2>Library backup</h2>
+      <div class="btnrow">
+        <button class="btn quiet small" data-action="export">Export JSON</button>
+        <button class="btn quiet small" data-action="import">Import JSON</button>
+      </div>
+      <div class="tagline">Export regularly — your library lives in this browser only.</div>
+    </section>
+    <div class="footerbar no-print">
+      <button class="btn ghost small" style="background:var(--paper)" data-action="openlb">Levain builder</button>
+      <button class="btn ghost small" style="background:var(--paper)" data-action="openbakeday">Bake day</button>
+      <button class="btn small" data-action="new">+ New formula</button>
+    </div>`;
+}
+
+function ingRowHTML(row, section, soakerId){
+  const opts = TYPES.map(t => `<option value="${t}" ${row.type===t?"selected":""}>${TYPE_LABEL[t]}</option>`).join("");
+  const da = `data-sec="${section}" ${soakerId?`data-soaker="${attr(soakerId)}"`:""} data-row="${attr(row.id)}"`;
+  const isLiq = row.type === "liquid";
+  return `<div class="ingrow${isLiq ? " liq" : ""}">
+    <input type="text" placeholder="Ingredient" value="${attr(row.name)}" ${da} data-field="name">
+    <input type="text" class="g num" inputmode="decimal" placeholder="g" value="${row.grams ?? ""}" ${da} data-field="grams" aria-label="grams">
+    ${isLiq ? `<input type="text" class="g num" inputmode="decimal" title="Water content %" value="${row.waterPct ?? 100}" ${da} data-field="waterPct" aria-label="water content percent">` : ""}
+    <select ${da} data-field="type">${opts}</select>
+    <button class="xbtn" data-action="delrow" ${da} aria-label="Remove row">✕</button>
+  </div>`;
+}
+
+function tagStripHTML(r, c){
+  const hydW = Math.max(0, Math.min(100, c.hyd));
+  return `
+  <div class="tagstrip">
+    <div class="tag"><div class="v blue num">${fp(c.hyd)}%</div><div class="l">True hydration</div></div>
+    <div class="tag"><div class="v bronze num">${fp(c.pff)}%</div><div class="l">Pre-fermented flour</div></div>
+    <div class="tag"><div class="v num">${fg(c.flour, ui.factor)} g</div><div class="l">Total flour</div></div>
+    <div class="tag"><div class="v num">${fg(c.dough, ui.factor)} g</div><div class="l">Total dough</div></div>
+    <div class="hydbar"><i style="width:${hydW}%"></i></div>
+    ${ui.factor !== 1 ? `<div class="scalednote">Scaled ×${(Math.round(ui.factor*1000)/1000)} — entered weights unchanged</div>` : ""}
+  </div>`;
+}
+
+function overallTableHTML(c){
+  const body = c.rows.map(row => `
+    <tr>
+      <td>${esc(row.name)}</td>
+      <td class="r num">${fg(row.grams, ui.factor)}</td>
+      <td class="r num">${c.flour ? fp(row.grams / c.flour * 100) : "—"}%</td>
+    </tr>`).join("");
+  return `<table class="formula">
+    <thead><tr><th>Ingredient</th><th class="r">Grams</th><th class="r">Baker's %</th></tr></thead>
+    <tbody>
+      ${body || `<tr><td colspan="3" style="color:var(--dim)">Add ingredients to see the formula.</td></tr>`}
+      <tr class="totalrow"><td>Total flour</td><td class="r num">${fg(c.flour, ui.factor)}</td><td class="r num">100.0%</td></tr>
+      <tr class="hydrow"><td>True hydration</td><td class="r num">${fg(c.water, ui.factor)}</td><td class="r num">${fp(c.hyd)}%</td></tr>
+    </tbody>
+  </table>
+  <div class="tagline">All flour and water from levain, starter, and soakers is rolled into these totals.</div>`;
+}
+
+function finalMixTableHTML(r, c){
+  let body = (r.ingredients||[]).filter(x => n(x.grams) || (x.name||"").trim()).map(x => `
+    <tr>
+      <td>${esc(x.name) || "(unnamed)"}</td>
+      <td class="r num">${fg(n(x.grams), ui.factor)}</td>
+      <td class="r num">${c.flour ? fp(n(x.grams)/c.flour*100) : "—"}%</td>
+    </tr>`).join("");
+  if (r.levain && r.levain.enabled && c.levainTotal){
+    body += `<tr>
+      <td><b>Levain</b> <span style="color:var(--dim);font-size:12.5px">(entire build)</span></td>
+      <td class="r num">${fg(c.levainTotal, ui.factor)}</td>
+      <td class="r num">${c.flour ? fp(c.levainTotal/c.flour*100) : "—"}%</td>
+    </tr>`;
+  }
+  c.soakerTotals.forEach(s => {
+    if (!s.total) return;
+    body += `<tr>
+      <td><b>${esc(s.name) || "Soaker"}</b> <span style="color:var(--dim);font-size:12.5px">(entire soak)</span></td>
+      <td class="r num">${fg(s.total, ui.factor)}</td>
+      <td class="r num">${c.flour ? fp(s.total/c.flour*100) : "—"}%</td>
+    </tr>`;
+  });
+  return `<table class="formula">
+    <thead><tr><th>Into the mixer</th><th class="r">Grams</th><th class="r">% of flour</th></tr></thead>
+    <tbody>
+      ${body || `<tr><td colspan="3" style="color:var(--dim)">Nothing to mix yet.</td></tr>`}
+      <tr class="totalrow"><td>Total dough</td><td class="r num">${fg(c.dough, ui.factor)}</td><td class="r num"></td></tr>
+    </tbody>
+  </table>
+  <div class="tagline">Levain and soaker flour/water are already subtracted from the mixer amounts above them.</div>`;
+}
+
+function yieldReadoutHTML(r){
+  const c = compute(r);
+  const dough = c.dough * ui.factor;
+  if (!dough) return "Add ingredients to see yield.";
+  const lg = n(r.yieldLoafG), ct = n(r.yieldCount);
+  const parts = [];
+  if (lg > 0) parts.push(`At <b>${Math.round(lg).toLocaleString()} g</b> per loaf, current dough (${fg(c.dough, ui.factor)} g) yields <b>${(Math.round(dough/lg*10)/10).toLocaleString()}</b> loaves`);
+  if (ct > 0) parts.push(`Split into <b>${Math.round(ct).toLocaleString()}</b> loaves → <b>${Math.round(dough/ct).toLocaleString()} g</b> each`);
+  if (!parts.length) return "Enter a loaf weight or count to see the yield of the current dough.";
+  return parts.join("<br>");
+}
+
+function hydAdjust(r, tPct){
+  const c = compute(r);
+  if (!c.flour) return { err: "Add flour to the formula first." };
+  const rows = (r.ingredients||[]).filter(x => x.type === "liquid");
+  if (!rows.length) return { err: "Add a liquid ingredient to the final dough first." };
+  let row = rows.find(x => x.id === ui.hydRowId);
+  if (!row) row = rows.slice().sort((a,b) => n(b.grams) - n(a.grams))[0];
+  const w = wpOf(row) / 100;
+  if (w <= 0) return { err: esc(row.name || "That liquid") + " has 0% water content — pick a different liquid to adjust." };
+  const reqWater = c.flour * tPct / 100;
+  const deltaW = reqWater - c.water;
+  const delta = deltaW / w;
+  const newG = n(row.grams) + delta;
+  if (newG < 0){
+    const minH = (c.water - n(row.grams) * w) / c.flour * 100;
+    return { err: "Can't reach " + fp(tPct) + "% — with this liquid at zero, the rest of the formula already puts true hydration at " + fp(minH) + "%." };
+  }
+  return { c, row, delta, deltaW, newG, w };
+}
+
+function hydReadoutHTML(r){
+  const t = parseFloat(ui.hydTarget);
+  if (!(t > 0)) return "Enter a target hydration to preview the water change.";
+  const a = hydAdjust(r, t);
+  if (a.err) return `<span style="color:var(--danger)">${a.err}</span>`;
+  if (Math.abs(a.deltaW) < 0.5) return `Already at ${fp(t)}% true hydration — no change needed.`;
+  const wNote = a.w < 1 ? ` — that's ${fg(Math.abs(a.deltaW), ui.factor)} g actual water at ${Math.round(a.w*100)}% content` : "";
+  return `${esc(a.row.name)}: ${fg(n(a.row.grams), ui.factor)} g → <b>${fg(a.newG, ui.factor)} g</b> (${a.delta > 0 ? "+" : "−"}${fg(Math.abs(a.delta), ui.factor)} g${wNote}) for <b>${fp(t)}%</b> true hydration · total dough becomes ${fg(a.c.dough + a.delta, ui.factor)} g`;
+}
+
+function normName(s){ return (s || "").trim().toLowerCase(); }
+
+function pffAdjust(r, tPct){
+  const c = compute(r);
+  if (!c.flour) return { err: "Add flour to the formula first." };
+  const lev = r.levain;
+  if (!lev || !lev.enabled) return { err: "This formula has no levain — enable one to adjust pre-fermented flour." };
+  const levRows = (lev.rows || []).filter(x => n(x.grams) > 0);
+  const sg = n(lev.starterGrams);
+  const sp = starterSplit(sg, lev.starterHydration);
+  const LF = levRows.filter(x => x.type === "flour").reduce((s,x) => s + n(x.grams), 0) + sp.flour;
+  if (!LF) return { err: "The levain has no flour to scale." };
+  const s = (c.flour * tPct / 100) / LF;
+  if (!(s > 0)) return { err: "Target must be above 0%." };
+
+  const dough = r.ingredients || [];
+  const findMatch = (name, type) => dough.find(d => normName(d.name) === normName(name) && d.type === type);
+  const missing = [];
+  const deltas = new Map();
+  const addDelta = (drow, d) => { const e = deltas.get(drow.id) || { row: drow, delta: 0 }; e.delta += d; deltas.set(drow.id, e); };
+  const levPlan = [];
+
+  levRows.forEach(x => {
+    if (!normName(x.name)){ missing.push("an unnamed levain ingredient (give it a name)"); return; }
+    const m = findMatch(x.name, x.type);
+    if (!m){ missing.push(`"${x.name.trim()}" (${TYPE_LABEL[x.type] || x.type})`); return; }
+    const to = Math.round(n(x.grams) * s);
+    levPlan.push({ id: x.id, from: n(x.grams), to });
+    addDelta(m, -(to - n(x.grams)));
+  });
+
+  let starterPlan = null;
+  if (sg){
+    const to = Math.round(sg * s);
+    const nsp = starterSplit(to, lev.starterHydration);
+    starterPlan = { from: sg, to };
+    const lf = levRows.filter(x => x.type === "flour").sort((a,b) => n(b.grams) - n(a.grams))[0];
+    const ll = levRows.filter(x => x.type === "liquid").sort((a,b) => n(b.grams) - n(a.grams))[0];
+    if (!lf) missing.push("a flour row in the levain (needed to balance the starter's flour)");
+    else { const mf = findMatch(lf.name, "flour"); if (mf) addDelta(mf, -(nsp.flour - sp.flour)); }
+    if (!ll) missing.push("a water row in the levain (needed to balance the starter's water)");
+    else { const ml = findMatch(ll.name, "liquid"); if (ml) addDelta(ml, -(nsp.water - sp.water)); }
+  }
+
+  if (missing.length){
+    const uniq = [...new Set(missing)];
+    return { err: "Can't adjust — these levain ingredients aren't in the final dough: " + uniq.join(", ") + ". Add them to the final dough (0 g is fine) so the levain and formula stay consistent." };
+  }
+
+  const neg = [];
+  deltas.forEach(e => {
+    const newG = n(e.row.grams) + e.delta;
+    if (newG < -0.5) neg.push(`${e.row.name.trim()} would need ${Math.round(-newG).toLocaleString()} g more than the mixer has`);
+  });
+  if (neg.length) return { err: "Target is too high: " + neg.join("; ") + ". Lower the target PFF." };
+
+  // exact dough-weight conservation with rounding
+  const levOld = levRows.reduce((t,x) => t + n(x.grams), 0) + sg;
+  const levNew = levPlan.reduce((t,x) => t + x.to, 0) + (starterPlan ? starterPlan.to : 0);
+  const doughPlan = [];
+  deltas.forEach(e => doughPlan.push({ id: e.row.id, name: e.row.name, from: n(e.row.grams), to: Math.round(n(e.row.grams) + e.delta), absDelta: Math.abs(e.delta) }));
+  const doughDeltaSum = doughPlan.reduce((t,x) => t + (x.to - x.from), 0);
+  const residual = -(levNew - levOld) - doughDeltaSum;
+  if (residual !== 0 && doughPlan.length){
+    const big = doughPlan.slice().sort((a,b) => b.absDelta - a.absDelta)[0];
+    big.to += residual;
+  }
+
+  // simulate for preview numbers
+  const sim = JSON.parse(JSON.stringify(r));
+  applyPffPlan(sim, { levPlan, starterPlan, doughPlan });
+  const cs = compute(sim);
+  return { s, levOld, levNew, levPlan, starterPlan, doughPlan, before: c, after: cs, plan: { levPlan, starterPlan, doughPlan } };
+}
+
+function applyPffPlan(rec, plan){
+  plan.levPlan.forEach(p => { const x = (rec.levain.rows || []).find(y => y.id === p.id); if (x) x.grams = p.to; });
+  if (plan.starterPlan) rec.levain.starterGrams = plan.starterPlan.to;
+  plan.doughPlan.forEach(p => { const d = (rec.ingredients || []).find(y => y.id === p.id); if (d) d.grams = p.to; });
+}
+
+function pffReadoutHTML(r){
+  const t = parseFloat(ui.pffTarget);
+  if (!(t > 0)) return "Enter a target pre-fermented flour % to preview the change.";
+  const a = pffAdjust(r, t);
+  if (a.err) return `<span style="color:var(--danger)">${esc(a.err)}</span>`;
+  if (Math.abs(a.after.pff - a.before.pff) < 0.05 && a.levNew === a.levOld) return `Already at ${fp(t)}% pre-fermented flour — no change needed.`;
+  const f = ui.factor;
+  const mix = a.doughPlan.filter(p => p.to !== p.from).map(p => `${esc(p.name)} ${fg(p.from,f)} → <b>${fg(p.to,f)} g</b>`).join(", ");
+  const doughNote = Math.round(a.after.dough) === Math.round(a.before.dough) ? `${fg(a.after.dough,f)} g (unchanged)` : `${fg(a.before.dough,f)} → ${fg(a.after.dough,f)} g`;
+  return `Levain ${fg(a.levOld,f)} → <b>${fg(a.levNew,f)} g</b> (×${(Math.round(a.s*1000)/1000)}) · Mixer: ${mix} · PFF ${fp(a.before.pff)}% → <b>${fp(a.after.pff)}%</b> · hydration ${fp(a.before.hyd)}% → ${fp(a.after.hyd)}% · total dough ${doughNote}`;
+}
+
+function levainStats(r){
+  const lev = r.levain;
+  if (!lev || !lev.enabled) return null;
+  const rows = (lev.rows || []).filter(x => n(x.grams) > 0);
+  const sg = n(lev.starterGrams);
+  const sp = starterSplit(sg, lev.starterHydration);
+  const LF = rows.filter(x => x.type === "flour").reduce((s,x) => s + n(x.grams), 0) + sp.flour;
+  const LW = rows.filter(x => x.type === "liquid").reduce((s,x) => s + n(x.grams) * wpOf(x) / 100, 0) + sp.water;
+  const total = rows.reduce((s,x) => s + n(x.grams), 0) + sg;
+  const feedFlour = rows.filter(x => x.type === "flour").reduce((s,x) => s + n(x.grams), 0);
+  return { LF, LW, total, hyd: LF ? LW / LF * 100 : 0, sp, sg, rows, feedFlour, inoc: feedFlour ? sg / feedFlour * 100 : 0 };
+}
+function levStatsLine(st){
+  return `Levain build: ${fg(st.total, ui.factor)} g · ${fp(st.hyd)}% hydration · ${fp(st.inoc)}% inoculation (whole build)`;
+}
+
+function levHydAdjust(r, tPct){
+  const st = levainStats(r);
+  if (!st) return { err: "This formula has no levain." };
+  if (!st.LF) return { err: "The levain has no flour." };
+  const wrow = st.rows.filter(x => x.type === "liquid").sort((a,b) => n(b.grams) - n(a.grams))[0];
+  if (!wrow) return { err: "Add a water row to the levain first." };
+  const w = wpOf(wrow) / 100;
+  if (w <= 0) return { err: "The levain's liquid has 0% water content." };
+  const targetW = st.LF * tPct / 100;
+  const otherW = st.LW - n(wrow.grams) * w;
+  const newWrow = (targetW - otherW) / w;
+  if (newWrow < -0.5){
+    const minH = otherW / st.LF * 100;
+    return { err: "Can't go that low — the starter's own water already puts the levain at " + fp(minH) + "% with no added water." };
+  }
+  const toLev = Math.max(0, Math.round(newWrow));
+  const delta = toLev - n(wrow.grams);
+  const dough = r.ingredients || [];
+  const drow = dough.find(d => normName(d.name) === normName(wrow.name) && d.type === "liquid");
+  if (!drow) return { err: `Can't adjust — "${wrow.name.trim()}" isn't in the final dough. Add it (0 g is fine) so the water can move between levain and mixer.` };
+  const toDough = n(drow.grams) - delta;
+  if (toDough < 0) return { err: "Target needs " + Math.round(-toDough).toLocaleString() + " g more water than the mixer has. Lower the target or raise the mixer water first." };
+  const sim = JSON.parse(JSON.stringify(r));
+  const sw = sim.levain.rows.find(x => x.id === wrow.id); if (sw) sw.grams = toLev;
+  const sd = sim.ingredients.find(x => x.id === drow.id); if (sd) sd.grams = toDough;
+  return { wrow, drow, toLev, toDough, delta, before: { st, c: compute(r) }, after: { st: levainStats(sim), c: compute(sim) },
+           plan: { levId: wrow.id, toLev, doughId: drow.id, toDough } };
+}
+
+function levHydReadoutHTML(r){
+  const t = parseFloat(ui.levHydTarget);
+  if (!(t > 0)) return "Enter a target levain hydration to preview the water change.";
+  const a = levHydAdjust(r, t);
+  if (a.err) return `<span style="color:var(--danger)">${esc(a.err)}</span>`;
+  if (a.delta === 0) return `Already at ${fp(t)}% levain hydration — no change needed.`;
+  const f = ui.factor;
+  return `Levain ${esc(a.wrow.name)} ${fg(n(a.wrow.grams),f)} → <b>${fg(a.toLev,f)} g</b> · mixer ${esc(a.drow.name)} ${fg(n(a.drow.grams),f)} → <b>${fg(a.toDough,f)} g</b> · levain hydration ${fp(a.before.st.hyd)}% → <b>${fp(a.after.st.hyd)}%</b> · levain total ${fg(a.before.st.total,f)} → ${fg(a.after.st.total,f)} g · overall hydration ${fp(a.after.c.hyd)}% and total dough ${fg(a.after.c.dough,f)} g unchanged`;
+}
+
+function ddtCalc(r){
+  const d = r.ddt || {};
+  const hasLev = !!(r.levain && r.levain.enabled);
+  const N = hasLev ? 4 : 3;
+  const vals = { ddt: parseFloat(d.ddt), flour: parseFloat(d.flour), room: parseFloat(d.room), levain: parseFloat(d.levain), friction: parseFloat(d.friction) };
+  const need = ["ddt","flour","room","friction"].concat(hasLev ? ["levain"] : []);
+  if (need.some(k => !isFinite(vals[k]))) return null;
+  const water = vals.ddt * N - vals.flour - vals.room - vals.friction - (hasLev ? vals.levain : 0);
+  return { water, N, unit: d.unit === "C" ? "C" : "F", hasLev };
+}
+
+function ddtReadoutHTML(r){
+  const x = ddtCalc(r);
+  const hasLev = !!(r.levain && r.levain.enabled);
+  if (!x) return `Enter desired dough temp, flour temp, room temp${hasLev ? ", levain temp" : ""}, and friction factor.`;
+  const t = Math.round(x.water * 10) / 10;
+  const cold = x.unit === "C" ? 2 : 35, warm = x.unit === "C" ? 40 : 105;
+  let note = "";
+  if (t < cold) note = " — colder than tap water gets: use ice water and count the ice in your water weight.";
+  else if (t > warm) note = " — quite warm; make sure it won't shock the levain.";
+  return `Use water at <b>${t.toLocaleString()}°${x.unit}</b> (${x.N}-factor formula${x.hasLev ? ", levain included" : ""})${note}`;
+}
+
+function refreshYieldReadout(){
+  const z = document.getElementById("yieldReadout");
+  const r = currentRecipe();
+  if (z && r) z.innerHTML = yieldReadoutHTML(r);
+}
+
+function computedZoneHTML(r){
+  const c = compute(r);
+  return tagStripHTML(r, c)
+    + `<section class="card gold1"><h2>Overall formula <span class="hint">true percentages</span></h2>${overallTableHTML(c)}</section>`
+    + `<section class="card gold2"><h2>Final mix <span class="hint">what goes in the spiral</span></h2>${finalMixTableHTML(r, c)}</section>`;
+}
+
+function renderRecipe(){
+  const r = currentRecipe();
+  if (!r){ ui.view = "library"; return renderLibrary(); }
+  const lev = r.levain || (r.levain = { enabled:false, rows:[], starterGrams:null, starterHydration:100 });
+
+  const soakersHTML = (r.soakers||[]).map(s => `
+    <section class="card">
+      <h2>
+        <input type="text" style="max-width:60%;font-family:var(--disp);text-transform:uppercase;letter-spacing:.06em;font-weight:700;border:none;background:transparent;padding:0"
+          value="${attr(s.name)}" placeholder="SOAKER NAME" data-sec="soakername" data-soaker="${attr(s.id)}">
+        <button class="btn danger small" data-action="delsoaker" data-soaker="${attr(s.id)}">Remove</button>
+      </h2>
+      ${(s.rows||[]).map(row => ingRowHTML(row, "soaker", s.id)).join("")}
+      <button class="btn ghost small addrow" data-action="addrow" data-sec="soaker" data-soaker="${attr(s.id)}">+ Ingredient</button>
+      <div class="subtot">Soak total: ${fg((s.rows||[]).reduce((t,x)=>t+n(x.grams),0), 1)} g entered</div>
+    </section>`).join("");
+
+  app.innerHTML = `
+    <header class="top no-print">
+      <div>
+        <button class="backlink" data-action="back">← Library</button>
+        <h1>${esc(r.name) || "Untitled formula"}</h1>
+      </div>
+      <button class="btn ghost small" data-action="sheet">Formula sheet</button>
+    </header>
+    ${storageBanner()}
+    <div id="undoZone">${undoBannerHTML(r)}</div>
+
+    <div id="computedZone">${computedZoneHTML(r)}</div>
+
+    <section class="card no-print">
+      <h2>Formula details</h2>
+      <div class="fieldgrid">
+        <div class="full"><label class="f">Name</label><input type="text" value="${attr(r.name)}" data-sec="meta" data-field="name" placeholder="e.g. Seeded Country Loaf"></div>
+        <div><label class="f">Category</label><input type="text" value="${attr(r.category)}" data-sec="meta" data-field="category" placeholder="Sourdough, Enriched…"></div>
+        <div><label class="f">Yield (loaf g × count)</label>
+          <div style="display:flex;gap:6px">
+            <input type="text" inputmode="decimal" class="num" value="${r.yieldLoafG ?? ""}" data-sec="meta" data-field="yieldLoafG" placeholder="850" aria-label="loaf grams">
+            <input type="text" inputmode="decimal" class="num" value="${r.yieldCount ?? ""}" data-sec="meta" data-field="yieldCount" placeholder="20" aria-label="loaf count">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card no-print">
+      <h2>Final dough <span class="hint">mixer additions only</span></h2>
+      ${(r.ingredients||[]).map(row => ingRowHTML(row, "dough")).join("")}
+      <button class="btn ghost small addrow" data-action="addrow" data-sec="dough">+ Ingredient</button>
+    </section>
+
+    <section class="card no-print">
+      <h2>Levain build
+        <button class="btn ${lev.enabled ? "quiet" : "ghost"} small" data-action="togglelevain">${lev.enabled ? "Remove levain" : "+ Add levain"}</button>
+      </h2>
+      ${lev.enabled ? `
+        ${(lev.rows||[]).map(row => ingRowHTML(row, "levain")).join("")}
+        <button class="btn ghost small addrow" data-action="addrow" data-sec="levain">+ Ingredient</button>
+        <div class="fieldgrid" style="margin-top:12px">
+          <div><label class="f">Mature starter (g)</label><input type="text" inputmode="decimal" class="num" value="${lev.starterGrams ?? ""}" data-sec="levmeta" data-field="starterGrams" placeholder="320"></div>
+          <div><label class="f">Starter hydration (%)</label><input type="text" inputmode="decimal" class="num" value="${lev.starterHydration ?? ""}" data-sec="levmeta" data-field="starterHydration" placeholder="100"></div>
+        </div>
+        <div class="tagline">The starter's own flour and water are counted in total flour and true hydration.</div>
+        ${(() => { const st = levainStats(r); return st ? `<div class="subtot" id="levStats">${levStatsLine(st)}</div>` : ""; })()}
+        <div class="btnrow" style="margin-top:8px;justify-content:flex-end">
+          <button class="btn ghost small" data-action="sendlevain">${r.levainLinkId && db.levains.some(x => x.id === r.levainLinkId) ? "Update in Levain Builder" : "Send to Levain Builder"}</button>
+        </div>
+        <div style="border-top:1px solid var(--line);margin:14px 0 12px"></div>
+        <div class="eyebrow" style="margin-bottom:8px">Adjust levain hydration</div>
+        <div class="scalegrid" style="grid-template-columns:1fr auto">
+          <div><label class="f">Target levain hydration (%)</label>
+            <input type="text" inputmode="decimal" class="num" id="levHydTarget" data-sec="levhydcalc" value="${attr(ui.levHydTarget ?? "")}" placeholder="${(() => { const st = levainStats(r); return st ? fp(st.hyd) : ""; })()}"></div>
+          <button class="btn small" data-action="applylevhyd">Set levain water</button>
+        </div>
+        <div class="tagline" id="levHydReadout" style="margin-top:10px">${levHydReadoutHTML(r)}</div>
+        <div class="tagline">Sets the levain's water so the whole build — starter's flour and water included — lands at the target. The difference moves to or from the same-named water row in the mixer, so overall hydration and total dough stay constant.</div>
+        <div style="border-top:1px solid var(--line);margin:14px 0 12px"></div>
+        <div class="eyebrow" style="margin-bottom:8px">Adjust pre-fermented flour</div>
+        <div class="scalegrid" style="grid-template-columns:1fr auto">
+          <div><label class="f">Target pre-fermented flour (%)</label>
+            <input type="text" inputmode="decimal" class="num" id="pffTarget" data-sec="pffcalc" value="${attr(ui.pffTarget ?? "")}" placeholder="${fp(compute(r).pff)}"></div>
+          <button class="btn small" data-action="applypff">Set levain</button>
+        </div>
+        <div class="tagline" id="pffReadout" style="margin-top:10px">${pffReadoutHTML(r)}</div>
+        <div class="tagline">Scales the whole build (starter included, so hydration and inoculation stay put) and balances each levain ingredient against its same-named row in the final dough. Total dough, total flour, and the overall formula stay constant — only the levain-vs-mixer split moves. Every levain ingredient must also exist in the final dough.</div>
+      ` : `<div class="tagline">No levain — straight dough or yeasted formula.</div>`}
+    </section>
+
+    ${soakersHTML}
+    <div class="no-print" style="margin:12px 0">
+      <button class="btn ghost small" data-action="addsoaker">+ Add soaker / porridge</button>
+    </div>
+
+    <section class="card no-print">
+      <h2>Scale batch</h2>
+      <label class="f">Quick multiplier</label>
+      <div class="btnrow" style="margin-bottom:12px">
+        ${[0.5,1,1.5,2,2.5,3].map(m => `<button class="btn small ${Math.abs(ui.factor - m) < 0.0001 ? "" : "ghost"}" data-action="mult" data-m="${m}">×${m}</button>`).join("")}
+      </div>
+      <div class="or" style="text-align:center;font-family:var(--disp);text-transform:uppercase;letter-spacing:.14em;font-size:11px;color:var(--dim);padding:2px 0 10px">— or scale to a target —</div>
+      <div class="scalegrid">
+        <div><label class="f">Loaf weight (g)</label><input type="text" inputmode="decimal" class="num" id="scLoaf" data-sec="scalecalc" value="${r.yieldLoafG ?? ""}" placeholder="850"></div>
+        <div><label class="f">Loaf count</label><input type="text" inputmode="decimal" class="num" id="scCount" data-sec="scalecalc" value="${r.yieldCount ?? ""}" placeholder="20"></div>
+        <button class="btn small" data-action="scaleyield">Scale</button>
+        <div class="or">— or —</div>
+        <div style="grid-column:1/3"><label class="f">Target total flour (g)</label><input type="text" inputmode="decimal" class="num" id="scFlour" placeholder="22680 = one 50 lb bag"></div>
+        <button class="btn small" data-action="scaleflour">Scale</button>
+      </div>
+      <div class="tagline" id="yieldReadout" style="margin-top:10px">${yieldReadoutHTML(r)}</div>
+      ${ui.factor !== 1 ? (() => {
+        const csc = compute(r);
+        return `
+        <div class="banner" style="margin-top:12px">Scaled ×${Math.round(ui.factor*1000)/1000} — every table on this page now shows <b>${fg(csc.dough, ui.factor)} g</b> total dough (<b>${fg(csc.flour, ui.factor)} g</b> flour). Your entered weights are unchanged.</div>
+        <div class="btnrow" style="margin-top:8px">
+          <button class="btn ghost small" data-action="bakein">Save scaled weights as the recipe</button>
+          <button class="btn quiet small" data-action="resetscale">Reset view</button>
+        </div>`;
+      })() : ""}
+    </section>
+
+    <section class="card no-print">
+      <h2>Adjust hydration</h2>
+      ${(() => {
+        const liqs = (r.ingredients||[]).filter(x => x.type === "liquid");
+        if (!liqs.length) return `<div class="tagline">Add a liquid ingredient to the final dough to use this.</div>`;
+        const fallback = liqs.slice().sort((a,b) => n(b.grams) - n(a.grams))[0].id;
+        const selId = liqs.some(x => x.id === ui.hydRowId) ? ui.hydRowId : fallback;
+        ui.hydRowId = selId;
+        return `
+        <div style="margin-bottom:10px"><label class="f">Liquid to adjust</label>
+          <select data-sec="hydrow">${liqs.map(x => `<option value="${attr(x.id)}"${x.id === selId ? " selected" : ""}>${esc(x.name) || "(unnamed)"} — ${fg(n(x.grams), ui.factor)} g · ${wpOf(x)}% water</option>`).join("")}</select></div>
+        <div class="scalegrid" style="grid-template-columns:1fr auto">
+          <div><label class="f">Target true hydration (%)</label>
+            <input type="text" inputmode="decimal" class="num" id="hydTarget" data-sec="hydcalc" value="${attr(ui.hydTarget ?? "")}" placeholder="${fp(compute(r).hyd)}"></div>
+          <button class="btn small" data-action="applyhyd">Set water</button>
+        </div>
+        <div class="tagline" id="hydReadout" style="margin-top:10px">${hydReadoutHTML(r)}</div>`;
+      })()}
+      <div class="tagline">True hydration counts each liquid's actual water content — the small % field on liquid rows, auto-set from the name (milk 87, heavy cream 58…). Levain and soakers stay as built.</div>
+    </section>
+
+
+    <section class="card no-print">
+      <h2>Process</h2>
+      <div class="procgrid">
+        <div><label class="f">Mix (time / speed)</label><input type="text" value="${attr(r.process.mix)}" data-sec="proc" data-field="mix"></div>
+        <div><label class="f">Target dough temp</label><input type="text" value="${attr(r.process.doughTemp)}" data-sec="proc" data-field="doughTemp"></div>
+        <div><label class="f">Bulk (time & temp)</label><input type="text" value="${attr(r.process.bulk)}" data-sec="proc" data-field="bulk"></div>
+        <div><label class="f">Fold schedule</label><input type="text" value="${attr(r.process.folds)}" data-sec="proc" data-field="folds"></div>
+        <div><label class="f">Divide & preshape</label><input type="text" value="${attr(r.process.divide)}" data-sec="proc" data-field="divide"></div>
+        <div><label class="f">Final shape</label><input type="text" value="${attr(r.process.shape)}" data-sec="proc" data-field="shape"></div>
+        <div><label class="f">Proof</label><input type="text" value="${attr(r.process.proof)}" data-sec="proc" data-field="proof"></div>
+        <div><label class="f">Bake (temp / time)</label><input type="text" value="${attr(r.process.bake)}" data-sec="proc" data-field="bake"></div>
+        <div class="full"><label class="f">Steam</label><input type="text" value="${attr(r.process.steam)}" data-sec="proc" data-field="steam"></div>
+        <div class="full"><label class="f">Notes</label><textarea data-sec="proc" data-field="notes_free">${esc(r.notes)}</textarea></div>
+      </div>
+      <div style="border-top:1px solid var(--line);margin:14px 0 12px"></div>
+      <div class="eyebrow" style="margin-bottom:8px">Water temperature (desired dough temp)</div>
+      ${(() => { const d = r.ddt || {}; const hasLev = !!(r.levain && r.levain.enabled); return `
+      <div class="fieldgrid">
+        <div><label class="f">Desired dough temp</label><input type="text" inputmode="decimal" class="num" value="${attr(d.ddt ?? "")}" data-sec="ddt" data-field="ddt" placeholder="78"></div>
+        <div><label class="f">Unit</label><select data-sec="ddt" data-field="unit"><option value="F"${d.unit !== "C" ? " selected" : ""}>°F</option><option value="C"${d.unit === "C" ? " selected" : ""}>°C</option></select></div>
+        <div><label class="f">Flour temp</label><input type="text" inputmode="decimal" class="num" value="${attr(d.flour ?? "")}" data-sec="ddt" data-field="flour" placeholder="72"></div>
+        <div><label class="f">Room temp</label><input type="text" inputmode="decimal" class="num" value="${attr(d.room ?? "")}" data-sec="ddt" data-field="room" placeholder="74"></div>
+        ${hasLev ? `<div><label class="f">Levain temp</label><input type="text" inputmode="decimal" class="num" value="${attr(d.levain ?? "")}" data-sec="ddt" data-field="levain" placeholder="76"></div>` : ""}
+        <div><label class="f">Friction factor</label><input type="text" inputmode="decimal" class="num" value="${attr(d.friction ?? "")}" data-sec="ddt" data-field="friction" placeholder="24"></div>
+      </div>`; })()}
+      <div class="tagline" id="ddtReadout" style="margin-top:10px">${ddtReadoutHTML(r)}</div>
+      <div class="tagline">Water temp = DDT × ${(r.levain && r.levain.enabled) ? 4 : 3} − flour − room${(r.levain && r.levain.enabled) ? " − levain" : ""} − friction. Friction factor is per mixer and mix length — measure it once by mixing a batch and back-solving.</div>
+    </section>
+
+    <section class="card no-print">
+      <h2>Bake log <span class="hint">what changed, how it went</span></h2>
+      <div class="fieldgrid">
+        <div><label class="f">Date</label><input type="date" id="logDate" value="${new Date().toISOString().slice(0,10)}"></div>
+        <div style="display:flex;align-items:flex-end"><button class="btn small" data-action="addlog" style="width:100%">Add entry</button></div>
+        <div class="full"><label class="f">Entry</label><textarea id="logText" placeholder="e.g. 92°F in the shop — dropped PFF to 12%, bulk ran 3.5 h, crumb slightly tight, try 13% next time"></textarea></div>
+      </div>
+      ${(r.log || []).length ? `<div style="margin-top:12px">${(r.log || []).slice().sort((a,b) => (b.date||"").localeCompare(a.date||"")).map(e => `
+        <div style="display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--line)">
+          <div class="num" style="flex:none;font-size:12.5px;color:var(--dim);padding-top:2px">${esc(e.date)}</div>
+          <div style="flex:1;font-size:14px;white-space:pre-wrap">${esc(e.text)}</div>
+          <button class="xbtn" data-action="dellog" data-id="${attr(e.id)}" aria-label="Delete entry">✕</button>
+        </div>`).join("")}</div>` : `<div class="tagline" style="margin-top:8px">No entries yet.</div>`}
+    </section>
+
+    <section class="card no-print">
+      <h2>Manage</h2>
+      <div class="btnrow">
+        <button class="btn quiet small" data-action="duplicate">Duplicate</button>
+        <button class="btn danger small" data-action="delete">Delete formula</button>
+      </div>
+    </section>`;
+}
+
+function renderSheet(){
+  const r = currentRecipe();
+  if (!r){ ui.view = "library"; return renderLibrary(); }
+  const c = compute(r);
+  const f = ui.factor;
+  const today = new Date().toLocaleDateString();
+
+  const procRows = [
+    ["Mix", r.process.mix], ["Dough temp", r.process.doughTemp], ["Bulk", r.process.bulk],
+    ["Folds", r.process.folds], ["Divide", r.process.divide], ["Shape", r.process.shape],
+    ["Proof", r.process.proof], ["Bake", r.process.bake], ["Steam", r.process.steam],
+    ["Water temp", (() => { const x = ddtCalc(r); if (!x) return ""; const d = r.ddt; return `${Math.round(x.water*10)/10}°${x.unit} (DDT ${d.ddt}°, flour ${d.flour}°, room ${d.room}°${x.hasLev ? ", levain " + d.levain + "°" : ""}, friction ${d.friction})`; })()]
+  ].filter(x => (x[1]||"").trim())
+   .map(x => `<div class="procline"><b>${x[0]}</b><span>${esc(x[1])}</span></div>`).join("");
+
+  const levDetail = (r.levain && r.levain.enabled) ? `
+    <h2>Levain build</h2>
+    <table class="formula"><tbody>
+      ${(r.levain.rows||[]).filter(x=>n(x.grams)).map(x=>`<tr><td>${esc(x.name)}</td><td class="r num">${fg(n(x.grams),f)} g</td></tr>`).join("")}
+      ${n(r.levain.starterGrams)?`<tr><td>Mature starter (${n(r.levain.starterHydration)}%)</td><td class="r num">${fg(n(r.levain.starterGrams),f)} g</td></tr>`:""}
+      <tr class="totalrow"><td>Levain total</td><td class="r num">${fg(c.levainTotal,f)} g</td></tr>
+    </tbody></table>` : "";
+
+  const soakDetail = (r.soakers||[]).filter(s => (s.rows||[]).some(x=>n(x.grams))).map(s => `
+    <h2>${esc(s.name)||"Soaker"}</h2>
+    <table class="formula"><tbody>
+      ${(s.rows||[]).filter(x=>n(x.grams)).map(x=>`<tr><td>${esc(x.name)}</td><td class="r num">${fg(n(x.grams),f)} g</td></tr>`).join("")}
+      <tr class="totalrow"><td>Total</td><td class="r num">${fg((s.rows||[]).reduce((t,x)=>t+n(x.grams),0),f)} g</td></tr>
+    </tbody></table>`).join("");
+
+  const doughScaled = c.dough * f;
+  let yieldStat = "";
+  const ylg = n(r.yieldLoafG), yct = n(r.yieldCount);
+  if (doughScaled && ylg > 0){
+    yieldStat = `<div><div class="v num">${(Math.round(doughScaled/ylg*10)/10).toLocaleString()} × ${Math.round(ylg).toLocaleString()} g</div><div class="l">Loaves × weight</div></div>`;
+  } else if (doughScaled && yct > 0){
+    yieldStat = `<div><div class="v num">${Math.round(yct).toLocaleString()} × ${Math.round(doughScaled/yct).toLocaleString()} g</div><div class="l">Loaves × weight</div></div>`;
+  }
+
+  app.innerHTML = `
+    <header class="top no-print">
+      <button class="backlink" data-action="backrecipe">← Back to editing</button>
+      <button class="btn small" data-action="print">Print</button>
+    </header>
+    <div class="sheet">
+      <h1>${esc(r.name) || "Untitled formula"}</h1>
+      <div class="meta">${esc(r.category)}${r.category?" · ":""}${r.yieldLoafG && r.yieldCount ? `${r.yieldLoafG} g × ${r.yieldCount}` : ""}${ui.factor!==1?` · scaled ×${Math.round(ui.factor*1000)/1000}`:""} · ${today}</div>
+      <div class="sheetstats">
+        <div><div class="v blue num">${fp(c.hyd)}%</div><div class="l">True hydration</div></div>
+        <div><div class="v bronze num">${fp(c.pff)}%</div><div class="l">Pre-fermented flour</div></div>
+        <div><div class="v num">${fg(c.flour,f)} g</div><div class="l">Total flour</div></div>
+        <div><div class="v num">${fg(c.dough,f)} g</div><div class="l">Total dough</div></div>
+        ${yieldStat}
+      </div>
+      <h2>Final mix</h2>
+      ${finalMixTableHTML(r, c)}
+      <h2>Overall formula</h2>
+      ${overallTableHTML(c)}
+      ${levDetail}
+      ${soakDetail}
+      ${procRows ? `<h2>Process</h2>${procRows}` : ""}
+      ${(r.notes||"").trim() ? `<h2>Notes</h2><div style="font-size:13.5px;white-space:pre-wrap">${esc(r.notes)}</div>` : ""}
+    </div>`;
+}
+
+/* =============== levain builder =============== */
+function computeLB(lb){
+  const target = n(lb.target), surplus = n(lb.surplus), h = n(lb.hydration);
+  const S0in = n(lb.starterGrams), h0 = n(lb.starterHydration);
+  const inoc = n(lb.inoculation);
+  const N = Math.min(6, Math.max(1, Math.round(n(lb.builds)) || 1));
+  const W = target + surplus;
+  const out = { ok: false, warnings: [], builds: [], W, N };
+  if (!W || !h){
+    out.warnings.push("Enter a target amount and hydration to see the schedule.");
+    return out;
+  }
+  let S0, k;
+  if (inoc > 0){
+    k = 1 + (1 + h/100) / (inoc/100);
+    S0 = W / Math.pow(k, N);
+    out.solvedStarter = S0;
+  } else {
+    S0 = S0in;
+    if (!S0){
+      out.warnings.push("Enter a starting starter amount — or set a target inoculation % and the starter amount will be solved for you.");
+      return out;
+    }
+    if (W <= S0){
+      out.warnings.push("Target is smaller than your starting starter — nothing to build.");
+      return out;
+    }
+    k = Math.pow(W / S0, 1 / N);
+  }
+  out.k = k;
+  out.inocNominal = (1 + h/100) / (k - 1) * 100;
+  if (k > 12) out.warnings.push("Each build grows ×" + fp(k) + " — a big jump per feed. Consider more builds or more starting starter.");
+  else if (k < 1.4) out.warnings.push("Feeds are small relative to the seed — this levain will move fast. Consider fewer builds or less starting starter.");
+
+  let flours = (lb.flours || []).filter(x => (x.name||"").trim() && n(x.pct) > 0);
+  const psum = flours.reduce((s,x) => s + n(x.pct), 0);
+  if (!flours.length) flours = [{ name: "Flour", pct: 100 }];
+  const norm = flours.map(x => ({ name: x.name, frac: n(x.pct) / (psum || 100) }));
+  if (psum && Math.abs(psum - 100) > 0.01)
+    out.warnings.push("Flour ratios sum to " + fp(psum) + "% — they've been normalized to 100%.");
+
+  let F = S0 / (1 + h0/100), Wt = S0 - F, M = S0;
+  for (let i = 1; i <= N; i++){
+    const Mi = (i === N) ? W : S0 * Math.pow(k, i);
+    const Ftar = Mi / (1 + h/100), Wtar = Mi - Ftar;
+    let fF = Ftar - F, fW = Wtar - Wt;
+    if (fF < -0.5 || fW < -0.5){
+      out.warnings.push("Build " + i + " would need negative flour or water — your starter hydration (" + h0 + "%) is too far from the target for this build size.");
+    }
+    fF = Math.max(0, fF); fW = Math.max(0, fW);
+    const split = norm.map(x => ({ name: x.name, g: Math.round(fF * x.frac) }));
+    const diff = Math.round(fF) - split.reduce((s,x) => s + x.g, 0);
+    if (split.length) split[0].g += diff;
+    out.builds.push({
+      i,
+      carry: Math.round(M),
+      split,
+      water: Math.round(fW),
+      total: Math.round(Mi),
+      rf: M ? fF / M : 0,
+      rw: M ? fW / M : 0,
+      inoc: fF > 0 ? (M / fF) * 100 : 0
+    });
+    F = Ftar; Wt = Wtar; M = Mi;
+  }
+  // build timing
+  const hpb = n(lb.hoursPerBuild);
+  const m = /^(\d{1,2}):(\d{2})$/.exec((lb.readyAt || "").trim());
+  if (hpb > 0 && m){
+    const readyMin = parseInt(m[1],10) * 60 + parseInt(m[2],10);
+    out.totalHours = hpb * N;
+    out.builds.forEach(b => {
+      const startMin = readyMin - (N - b.i + 1) * hpb * 60;
+      const dayOff = Math.floor(startMin / 1440);
+      const tod = ((startMin % 1440) + 1440) % 1440;
+      const hh = Math.floor(tod / 60), mm = tod % 60;
+      const h12 = ((hh + 11) % 12) + 1, ampm = hh < 12 ? "AM" : "PM";
+      const dayLabel = dayOff === 0 ? "same day" : dayOff === -1 ? "day before" : (-dayOff) + " days before";
+      b.start = `${h12}:${String(mm).padStart(2,"0")} ${ampm} (${dayLabel})`;
+    });
+    const rh = Math.floor(readyMin/60), rm = readyMin % 60;
+    out.readyLabel = `${((rh + 11) % 12) + 1}:${String(rm).padStart(2,"0")} ${rh < 12 ? "AM" : "PM"}`;
+  }
+  out.ok = true;
+  return out;
+}
+
+function currentLevain(){ return db.levains.find(x => x.id === ui.levainId) || null; }
+
+function lbResultsHTML(lv){
+  const res = computeLB(lv);
+  let html = res.warnings.map(w => `<div class="banner">${esc(w)}</div>`).join("");
+  if (!res.ok) return html;
+  if (res.solvedStarter != null){
+    const sg = Math.round(res.solvedStarter * 10) / 10;
+    html += `<div class="banner">Target inoculation <b>${fp(n(lv.inoculation))}%</b> → begin with <b>${sg.toLocaleString()} g</b> mature starter. While this is set, the starter-amount field is ignored.</div>`;
+  }
+  const blocks = res.builds.map(b => {
+    const frac = res.N > 1 ? (b.i - 1) / (res.N - 1) : 1;
+    const bg = (0.06 + 0.30 * frac).toFixed(3);
+    const bd = (0.30 + 0.70 * frac).toFixed(3);
+    return `
+    <div class="buildblock" style="background:rgba(214,150,30,${bg});border-left-color:rgba(163,108,15,${bd})">
+      <div class="eyebrow" style="margin-bottom:5px">Build ${b.i} &nbsp;·&nbsp; inoc ${fp(b.inoc)}% &nbsp;·&nbsp; seed 1 : ${fp(b.rf)} flour : ${fp(b.rw)} water${b.start ? ` &nbsp;·&nbsp; start ${b.start}` : ""}</div>
+      <table class="formula"><tbody>
+        <tr><td>${b.i === 1 ? "Mature starter" : "All of build " + (b.i - 1)}</td><td class="r num">${b.carry.toLocaleString()} g</td></tr>
+        ${b.split.map(s => `<tr><td>${esc(s.name)}</td><td class="r num">${s.g.toLocaleString()} g</td></tr>`).join("")}
+        <tr><td>Water</td><td class="r num">${b.water.toLocaleString()} g</td></tr>
+        <tr class="totalrow"><td>After build ${b.i}</td><td class="r num">${b.total.toLocaleString()} g</td></tr>
+      </tbody></table>
+    </div>`;
+  }).join("");
+  html += `<section class="card">
+    <h2>Build schedule <span class="hint">grows ×${fp(res.k)} each build</span></h2>
+    ${blocks}
+    <div class="tagline"><b>${fg(n(lv.target),1)} g</b> goes to the dough · <b>${fg(n(lv.surplus),1)} g</b> stays back as your starter.${res.readyLabel ? ` Ready at <b>${res.readyLabel}</b> — ${res.totalHours} h total build time.` : ""}</div>
+  </section>`;
+  return html;
+}
+
+function refreshLB(){
+  const zone = document.getElementById("lbResults");
+  const lv = currentLevain();
+  if (zone && lv) zone.innerHTML = lbResultsHTML(lv);
+}
+
+function renderLB(){
+  const lb = currentLevain();
+  if (!lb){ ui.view = "lblib"; return renderLBLib(); }
+  const flourRows = lb.flours.map(x => `
+    <div class="ingrow" style="grid-template-columns:minmax(0,1fr) 84px 34px">
+      <input type="text" placeholder="Flour" value="${attr(x.name)}" data-sec="lbflour" data-row="${attr(x.id)}" data-field="name">
+      <input type="text" class="g num" inputmode="decimal" placeholder="%" value="${x.pct ?? ""}" data-sec="lbflour" data-row="${attr(x.id)}" data-field="pct" aria-label="percent of flour">
+      <button class="xbtn" data-action="lbdelflour" data-row="${attr(x.id)}" aria-label="Remove flour">✕</button>
+    </div>`).join("");
+  app.innerHTML = `
+    <header class="top no-print">
+      <div>
+        <button class="backlink" data-action="openlb">← Levains</button>
+        <h1>${esc(lb.name) || "Untitled levain"}</h1>
+        <div class="sub">Work backward from the levain your dough needs</div>
+      </div>
+      <button class="btn ghost small" data-action="lbsheet">Formula sheet</button>
+    </header>
+    ${storageBanner()}
+    <section class="card no-print">
+      <h2>Targets</h2>
+      <div class="fieldgrid">
+        <div class="full"><label class="f">Name</label>
+          <input type="text" value="${attr(lb.name)}" data-sec="lb" data-field="name" placeholder="e.g. Rye levain — Saturday bake"></div>
+        <div><label class="f">Levain needed for the dough (g)</label>
+          <input type="text" inputmode="decimal" class="num" value="${lb.target ?? ""}" data-sec="lb" data-field="target" placeholder="3520"></div>
+        <div><label class="f">Surplus to keep back (g)</label>
+          <input type="text" inputmode="decimal" class="num" value="${lb.surplus ?? ""}" data-sec="lb" data-field="surplus" placeholder="100"></div>
+        <div><label class="f">Levain hydration (%)</label>
+          <input type="text" inputmode="decimal" class="num" value="${lb.hydration ?? ""}" data-sec="lb" data-field="hydration" placeholder="100"></div>
+        <div><label class="f">Number of builds (1–6)</label>
+          <input type="text" inputmode="numeric" class="num" value="${lb.builds ?? ""}" data-sec="lb" data-field="builds" placeholder="2"></div>
+        <div><label class="f">Starting mature starter (g)</label>
+          <input type="text" inputmode="decimal" class="num" value="${lb.starterGrams ?? ""}" data-sec="lb" data-field="starterGrams" placeholder="50"></div>
+        <div><label class="f">Starter hydration (%)</label>
+          <input type="text" inputmode="decimal" class="num" value="${lb.starterHydration ?? ""}" data-sec="lb" data-field="starterHydration" placeholder="100"></div>
+        <div class="full"><label class="f">Target inoculation % — optional, solves the starter amount for you</label>
+          <input type="text" inputmode="decimal" class="num" value="${lb.inoculation ?? ""}" data-sec="lb" data-field="inoculation" placeholder="e.g. 25"></div>
+        <div><label class="f">Levain ready at</label>
+          <input type="time" value="${attr(lb.readyAt ?? "")}" data-sec="lb" data-field="readyAt"></div>
+        <div><label class="f">Hours per build</label>
+          <input type="text" inputmode="decimal" class="num" value="${lb.hoursPerBuild ?? ""}" data-sec="lb" data-field="hoursPerBuild" placeholder="8"></div>
+      </div>
+      <div class="tagline">Inoculation = mature seed as a % of each feed's flour. Lower % = slower, longer builds; higher % = faster.</div>
+    </section>
+    <section class="card no-print">
+      <h2>Flour mix <span class="hint">% of each feed's flour</span></h2>
+      ${flourRows}
+      <button class="btn ghost small addrow" data-action="lbaddflour">+ Flour</button>
+    </section>
+    <div id="lbResults">${lbResultsHTML(lb)}</div>
+    <section class="card no-print">
+      <h2>Manage</h2>
+      <div class="btnrow">
+        <button class="btn quiet small" data-action="duplevain">Duplicate</button>
+        <button class="btn danger small" data-action="dellevain">Delete levain</button>
+      </div>
+    </section>`;
+}
+
+function renderBakeDay(){
+  if (!Array.isArray(db.bakeSel)) db.bakeSel = [];
+  db.bakeSel = db.bakeSel.filter(id => db.recipes.some(r => r.id === id));
+  const sel = db.recipes.filter(r => db.bakeSel.includes(r.id));
+  const today = new Date().toLocaleDateString();
+
+  const picker = db.recipes.map(r => {
+    const c = compute(r);
+    const y = (n(r.yieldLoafG) && n(r.yieldCount)) ? ` · ${r.yieldCount} × ${r.yieldLoafG} g` : "";
+    return `<label style="display:flex;align-items:center;gap:10px;padding:9px 4px;border-bottom:1px solid var(--line);cursor:pointer">
+      <input type="checkbox" data-sec="bakesel" value="${attr(r.id)}" ${db.bakeSel.includes(r.id) ? "checked" : ""} style="width:20px;height:20px;flex:none">
+      <span style="flex:1"><b>${esc(r.name) || "Untitled formula"}</b><span style="color:var(--dim);font-size:13px">${y} · ${fg(c.dough,1)} g dough</span></span>
+    </label>`;
+  }).join("");
+
+  // aggregate mise en place across selected recipes
+  const agg = new Map();
+  let totFlour = 0, totWater = 0, totDough = 0;
+  const levains = [];
+  sel.forEach(r => {
+    const c = compute(r);
+    totFlour += c.flour; totWater += c.water; totDough += c.dough;
+    c.rows.forEach(row => {
+      const key = normName(row.name) + "|" + row.type;
+      const cur = agg.get(key);
+      if (cur) cur.grams += row.grams; else agg.set(key, { name: row.name, grams: row.grams, type: row.type, order: row.order });
+    });
+    const st = levainStats(r);
+    if (st && st.total) levains.push({ recipe: r.name || "Untitled", total: st.total, hyd: st.hyd, sg: st.sg, hyd0: n(r.levain.starterHydration) });
+  });
+  const aggRows = Array.from(agg.values()).filter(x => x.grams > 0).sort((a,b) => a.order - b.order || b.grams - a.grams);
+
+  const miseTable = aggRows.length ? `<table class="formula">
+    <thead><tr><th>Ingredient</th><th class="r">Total grams</th></tr></thead>
+    <tbody>${aggRows.map(x => `<tr><td>${esc(x.name)}</td><td class="r num">${fg(x.grams,1)}</td></tr>`).join("")}
+    <tr class="totalrow"><td>Total flour</td><td class="r num">${fg(totFlour,1)}</td></tr>
+    <tr class="hydrow"><td>Total water (true)</td><td class="r num">${fg(totWater,1)}</td></tr></tbody></table>` : "";
+
+  const levTable = levains.length ? `<table class="formula">
+    <thead><tr><th>Levain for</th><th class="r">Build</th><th class="r">Hyd</th><th class="r">Seed</th></tr></thead>
+    <tbody>${levains.map(l => `<tr><td>${esc(l.recipe)}</td><td class="r num">${fg(l.total,1)} g</td><td class="r num">${fp(l.hyd)}%</td><td class="r num">${fg(l.sg,1)} g @ ${fp(l.hyd0)}%</td></tr>`).join("")}</tbody></table>` : "";
+
+  const perRecipe = sel.map(r => {
+    const c = compute(r);
+    const y = (n(r.yieldLoafG) && n(r.yieldCount)) ? `${r.yieldCount} × ${r.yieldLoafG} g · ` : "";
+    const lev = (r.levain && r.levain.enabled && c.levainTotal) ? `
+      <div class="eyebrow" style="margin:10px 0 4px">Levain build</div>
+      <table class="formula"><tbody>
+        ${(r.levain.rows||[]).filter(x=>n(x.grams)).map(x=>`<tr><td>${esc(x.name)}</td><td class="r num">${fg(n(x.grams),1)} g</td></tr>`).join("")}
+        ${n(r.levain.starterGrams)?`<tr><td>Mature starter (${n(r.levain.starterHydration)}%)</td><td class="r num">${fg(n(r.levain.starterGrams),1)} g</td></tr>`:""}
+        <tr class="totalrow"><td>Levain total</td><td class="r num">${fg(c.levainTotal,1)} g</td></tr>
+      </tbody></table>` : "";
+    const ddt = ddtCalc(r);
+    return `<h2>${esc(r.name) || "Untitled formula"}</h2>
+      <div class="meta">${y}${fg(c.dough,1)} g dough · ${fp(c.hyd)}% hydration · ${fp(c.pff)}% PFF${ddt ? ` · water ${Math.round(ddt.water*10)/10}°${ddt.unit}` : ""}</div>
+      <div class="eyebrow" style="margin:10px 0 4px">Final mix</div>
+      ${finalMixTableHTML(r, c)}
+      ${lev}`;
+  }).join("");
+
+  app.innerHTML = `
+    <header class="top no-print">
+      <div>
+        <button class="backlink" data-action="back">← Library</button>
+        <h1>Bake Day</h1>
+        <div class="sub">Pick today's formulas for one combined sheet</div>
+      </div>
+      ${sel.length ? `<button class="btn small" data-action="print">Print</button>` : ""}
+    </header>
+    ${storageBanner()}
+    <section class="card no-print">
+      <h2>Formulas baking today <span class="hint">${sel.length} selected</span></h2>
+      ${picker || `<div class="tagline">No formulas in the library yet.</div>`}
+    </section>
+    ${sel.length ? `
+    <div class="sheet">
+      <h1>Bake Day</h1>
+      <div class="meta">${today} · ${sel.length} formula${sel.length === 1 ? "" : "s"}</div>
+      <div class="sheetstats">
+        <div><div class="v num">${fg(totDough,1)} g</div><div class="l">Total dough</div></div>
+        <div><div class="v num">${fg(totFlour,1)} g</div><div class="l">Total flour</div></div>
+        <div><div class="v blue num">${fg(totWater,1)} g</div><div class="l">Total water</div></div>
+        <div><div class="v bronze num">${levains.length}</div><div class="l">Levains to build</div></div>
+      </div>
+      <h2>Mise en place — all formulas combined</h2>
+      ${miseTable}
+      ${levTable ? `<h2>Levains to build</h2>${levTable}` : ""}
+      ${perRecipe}
+    </div>` : `<div class="empty">Tick the formulas you're baking to build the sheet.</div>`}`;
+}
+
+function renderLBLib(){
+  const cards = db.levains.map(lv => {
+    const res = computeLB(lv);
+    const total = n(lv.target) + n(lv.surplus);
+    return `<button class="reccard" data-action="openlevain" data-id="${attr(lv.id)}">
+      <h3>${esc(lv.name) || "Untitled levain"}</h3>
+      <div class="chips">
+        <span class="chip hyd num">${fp(n(lv.hydration))}% hyd</span>
+        <span class="chip num">${fg(total,1)} g</span>
+        <span class="chip num">${res.N} build${res.N === 1 ? "" : "s"}</span>
+        ${res.ok ? `<span class="chip pff num">×${fp(res.k)} / build</span>` : ""}
+      </div>
+    </button>`;
+  }).join("");
+  app.innerHTML = `
+    <header class="top">
+      <div>
+        <button class="backlink" data-action="back">← Library</button>
+        <h1>Levain Builder</h1>
+        <div class="sub">Build schedules for each of your starters</div>
+      </div>
+    </header>
+    ${storageBanner()}
+    <div class="libgrid">
+      ${cards || `<div class="empty">No levains yet. Start one below.</div>`}
+    </div>
+    <div class="footerbar no-print">
+      <button class="btn" data-action="newlevain">+ New levain</button>
+    </div>`;
+}
+
+function renderLBSheet(){
+  const lv = currentLevain();
+  if (!lv){ ui.view = "lblib"; return renderLBLib(); }
+  const res = computeLB(lv);
+  const today = new Date().toLocaleDateString();
+  const total = n(lv.target) + n(lv.surplus);
+  const buildTables = res.ok ? res.builds.map(b => `
+    <h2>Build ${b.i} <span style="font-family:var(--mono);font-weight:400;letter-spacing:0;text-transform:none;font-size:11.5px;color:var(--dim)">&nbsp;inoc ${fp(b.inoc)}% · seed 1 : ${fp(b.rf)} flour : ${fp(b.rw)} water${b.start ? ` · start ${b.start}` : ""}</span></h2>
+    <table class="formula"><tbody>
+      <tr><td>${b.i === 1 ? "Mature starter" : "All of build " + (b.i - 1)}</td><td class="r num">${b.carry.toLocaleString()} g</td></tr>
+      ${b.split.map(s => `<tr><td>${esc(s.name)}</td><td class="r num">${s.g.toLocaleString()} g</td></tr>`).join("")}
+      <tr><td>Water</td><td class="r num">${b.water.toLocaleString()} g</td></tr>
+      <tr class="totalrow"><td>After build ${b.i}</td><td class="r num">${b.total.toLocaleString()} g</td></tr>
+    </tbody></table>`).join("")
+    : res.warnings.map(w => `<div class="banner">${esc(w)}</div>`).join("");
+  app.innerHTML = `
+    <header class="top no-print">
+      <button class="backlink" data-action="backlbedit">← Back to editing</button>
+      <button class="btn small" data-action="print">Print</button>
+    </header>
+    <div class="sheet">
+      <h1>${esc(lv.name) || "Untitled levain"}</h1>
+      <div class="meta">Starter: ${fg(res.solvedStarter != null ? res.solvedStarter : n(lv.starterGrams),1)} g @ ${fp(n(lv.starterHydration))}% · ${today}</div>
+      <div class="sheetstats">
+        <div><div class="v num">${fg(total,1)} g</div><div class="l">Total levain</div></div>
+        <div><div class="v blue num">${fp(n(lv.hydration))}%</div><div class="l">Hydration</div></div>
+        ${res.ok ? `<div><div class="v bronze num">${fp(res.inocNominal)}%</div><div class="l">Inoculation</div></div>` : ""}
+        <div><div class="v num">${res.N}</div><div class="l">Builds</div></div>
+        ${res.ok ? `<div><div class="v num">×${fp(res.k)}</div><div class="l">Growth / build</div></div>` : ""}
+      </div>
+      ${buildTables}
+      ${res.ok ? `<h2>Yield</h2>
+      ${res.readyLabel ? `<div class="procline"><b>Ready at</b><span class="num">${res.readyLabel} · ${res.totalHours} h total</span></div>` : ""}
+      <div class="procline"><b>To the dough</b><span class="num">${fg(n(lv.target),1)} g</span></div>
+      <div class="procline"><b>Surplus kept</b><span class="num">${fg(n(lv.surplus),1)} g</span></div>` : ""}
+    </div>`;
+}
+
+/* =============== updates =============== */
+function findRow(r, sec, soakerId, rowId){
+  if (sec === "dough") return (r.ingredients||[]).find(x => x.id === rowId);
+  if (sec === "levain") return ((r.levain&&r.levain.rows)||[]).find(x => x.id === rowId);
+  if (sec === "soaker"){
+    const s = (r.soakers||[]).find(s => s.id === soakerId);
+    return s ? (s.rows||[]).find(x => x.id === rowId) : null;
+  }
+  return null;
+}
+
+function refreshComputed(){
+  const zone = document.getElementById("computedZone");
+  const r = currentRecipe();
+  if (zone && r) zone.innerHTML = computedZoneHTML(r);
+  refreshYieldReadout();
+  if (r){
+    const sel = document.querySelector('[data-sec="hydrow"]');
+    if (sel){
+      const liqs = (r.ingredients||[]).filter(x => x.type === "liquid");
+      if (liqs.length){
+        const fallback = liqs.slice().sort((a,b) => n(b.grams) - n(a.grams))[0].id;
+        const selId = liqs.some(x => x.id === ui.hydRowId) ? ui.hydRowId : fallback;
+        ui.hydRowId = selId;
+        sel.innerHTML = liqs.map(x => `<option value="${attr(x.id)}"${x.id === selId ? " selected" : ""}>${esc(x.name) || "(unnamed)"} — ${fg(n(x.grams), ui.factor)} g · ${wpOf(x)}% water</option>`).join("");
+      }
+    }
+    const hz = document.getElementById("hydReadout");
+    if (hz) hz.innerHTML = hydReadoutHTML(r);
+    const pz = document.getElementById("pffReadout");
+    if (pz) pz.innerHTML = pffReadoutHTML(r);
+    const lz = document.getElementById("levHydReadout");
+    if (lz) lz.innerHTML = levHydReadoutHTML(r);
+    const ls = document.getElementById("levStats");
+    const st = levainStats(r);
+    if (ls && st) ls.innerHTML = levStatsLine(st);
+  }
+}
+
+app.addEventListener("input", e => {
+  const t = e.target;
+  const sec = t.dataset.sec;
+  if (!sec) return;
+
+  if (sec === "lb"){
+    const lv = currentLevain(); if (!lv) return;
+    const fld = t.dataset.field;
+    if (fld === "name" || fld === "readyAt") lv[fld] = t.value;
+    else lv[fld] = t.value === "" ? null : parseFloat(t.value);
+    save(); refreshLB(); return;
+  }
+  if (sec === "lbflour"){
+    const lv = currentLevain(); if (!lv) return;
+    const row = lv.flours.find(x => x.id === t.dataset.row);
+    if (row){
+      if (t.dataset.field === "pct") row.pct = t.value === "" ? null : parseFloat(t.value);
+      else row.name = t.value;
+    }
+    save(); refreshLB(); return;
+  }
+
+  const r = currentRecipe();
+  if (!r) return;
+
+  if (sec === "meta"){
+    const fld = t.dataset.field;
+    if (fld === "yieldLoafG" || fld === "yieldCount"){
+      r[fld] = t.value === "" ? null : parseFloat(t.value) || null;
+      save(); refreshYieldReadout();
+      const sc = document.getElementById(fld === "yieldLoafG" ? "scLoaf" : "scCount");
+      if (sc) sc.value = t.value;
+      return;
+    }
+    r[fld] = t.value;
+    save(); return;
+  }
+  if (sec === "scalecalc"){
+    const v = t.value === "" ? null : parseFloat(t.value) || null;
+    if (t.id === "scLoaf") r.yieldLoafG = v; else r.yieldCount = v;
+    save(); refreshYieldReadout();
+    return;
+  }
+  if (sec === "hydcalc"){
+    ui.hydTarget = t.value;
+    const z = document.getElementById("hydReadout");
+    if (z) z.innerHTML = hydReadoutHTML(r);
+    return;
+  }
+  if (sec === "pffcalc"){
+    ui.pffTarget = t.value;
+    const z = document.getElementById("pffReadout");
+    if (z) z.innerHTML = pffReadoutHTML(r);
+    return;
+  }
+  if (sec === "ddt"){
+    if (!r.ddt) r.ddt = {};
+    r.ddt[t.dataset.field] = t.value;
+    save();
+    const z = document.getElementById("ddtReadout");
+    if (z) z.innerHTML = ddtReadoutHTML(r);
+    return;
+  }
+  if (sec === "levhydcalc"){
+    ui.levHydTarget = t.value;
+    const z = document.getElementById("levHydReadout");
+    if (z) z.innerHTML = levHydReadoutHTML(r);
+    return;
+  }
+  if (sec === "proc"){
+    const fld = t.dataset.field;
+    if (fld === "notes_free") r.notes = t.value;
+    else r.process[fld] = t.value;
+    save(); return;
+  }
+  if (sec === "levmeta"){
+    r.levain[t.dataset.field] = t.value === "" ? null : parseFloat(t.value);
+    save(); refreshComputed(); return;
+  }
+  if (sec === "soakername"){
+    const s = (r.soakers||[]).find(s => s.id === t.dataset.soaker);
+    if (s) s.name = t.value;
+    save(); refreshComputed(); return;
+  }
+  const row = findRow(r, sec, t.dataset.soaker, t.dataset.row);
+  if (!row) return;
+  const fld = t.dataset.field;
+  if (fld === "grams") row.grams = t.value === "" ? null : parseFloat(t.value);
+  else if (fld === "waterPct"){
+    row.waterPct = t.value === "" ? null : parseFloat(t.value);
+    row.wpManual = true;
+  }
+  else {
+    row[fld] = t.value;
+    if (fld === "name" && row.type === "liquid" && !row.wpManual){
+      row.waterPct = presetFor(t.value);
+      const wrap = t.closest(".ingrow");
+      const wpEl = wrap ? wrap.querySelector('[data-field="waterPct"]') : null;
+      if (wpEl) wpEl.value = row.waterPct;
+    }
+  }
+  save(); refreshComputed();
+});
+
+app.addEventListener("change", e => {
+  const t = e.target;
+  if (t.type === "checkbox" && t.dataset.sec === "bakesel"){
+    if (!Array.isArray(db.bakeSel)) db.bakeSel = [];
+    if (t.checked){ if (!db.bakeSel.includes(t.value)) db.bakeSel.push(t.value); }
+    else db.bakeSel = db.bakeSel.filter(id => id !== t.value);
+    save(); rerenderInPlace();
+    return;
+  }
+  if (t.tagName !== "SELECT" || !t.dataset.sec) return;
+  if (t.dataset.sec === "ddt"){
+    const r = currentRecipe(); if (!r) return;
+    if (!r.ddt) r.ddt = {};
+    r.ddt.unit = t.value;
+    save();
+    const z = document.getElementById("ddtReadout");
+    if (z) z.innerHTML = ddtReadoutHTML(r);
+    return;
+  }
+  if (t.dataset.sec === "hydrow"){
+    ui.hydRowId = t.value;
+    const r = currentRecipe();
+    const z = document.getElementById("hydReadout");
+    if (z && r) z.innerHTML = hydReadoutHTML(r);
+    return;
+  }
+  const r = currentRecipe(); if (!r) return;
+  const row = findRow(r, t.dataset.sec, t.dataset.soaker, t.dataset.row);
+  if (row){
+    row.type = t.value;
+    if (row.type === "liquid" && row.waterPct == null && !row.wpManual) row.waterPct = presetFor(row.name);
+    save(); rerenderInPlace();
+  }
+});
+
+app.addEventListener("click", e => {
+  const btn = e.target.closest("[data-action]");
+  if (!btn) return;
+  const act = btn.dataset.action;
+  const r = currentRecipe();
+
+  if (act === "open"){ ui.recipeId = btn.dataset.id; ui.view = "recipe"; ui.factor = 1; ui.hydTarget = null; ui.hydRowId = null; ui.pffTarget = null; ui.levHydTarget = null; render(); }
+  else if (act === "new"){
+    const nr = blankRecipe();
+    db.recipes.unshift(nr); save();
+    ui.recipeId = nr.id; ui.view = "recipe"; ui.factor = 1; ui.hydTarget = null; ui.hydRowId = null; ui.pffTarget = null; ui.levHydTarget = null; render();
+  }
+  else if (act === "back"){ ui.view = "library"; ui.factor = 1; render(); }
+  else if (act === "backrecipe"){ ui.view = "recipe"; render(); }
+  else if (act === "sheet"){ ui.view = "sheet"; render(); }
+  else if (act === "print"){ window.print(); }
+  else if (act === "export"){
+    const blob = new Blob([JSON.stringify(db, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "formula-book-backup.json";
+    a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href), 2000);
+  }
+  else if (act === "import"){ document.getElementById("importFile").click(); }
+  else if (act === "openlb"){ ui.view = "lblib"; render(); }
+  else if (act === "openbakeday"){ ui.view = "bakeday"; ui.factor = 1; render(); }
+  else if (act === "openlevain"){ ui.levainId = btn.dataset.id; ui.view = "lb"; render(); }
+  else if (act === "newlevain"){
+    const lv = defaultLevain();
+    db.levains.unshift(lv); save();
+    ui.levainId = lv.id; ui.view = "lb"; render();
+  }
+  else if (act === "lbsheet"){ ui.view = "lbsheet"; render(); }
+  else if (act === "backlbedit"){ ui.view = "lb"; render(); }
+  else if (act === "duplevain"){
+    const lv = currentLevain(); if (!lv) return;
+    const copy = JSON.parse(JSON.stringify(lv));
+    copy.id = uid();
+    copy.name = (copy.name || "Untitled") + " (copy)";
+    copy.flours.forEach(x => x.id = uid());
+    db.levains.unshift(copy); save();
+    ui.levainId = copy.id; render();
+  }
+  else if (act === "dellevain"){
+    const lv = currentLevain(); if (!lv) return;
+    if (confirm("Delete this levain? This can't be undone.")){
+      db.levains = db.levains.filter(x => x.id !== lv.id);
+      save(); ui.view = "lblib"; ui.levainId = null; render();
+    }
+  }
+  else if (act === "lbaddflour"){
+    const lv = currentLevain(); if (!lv) return;
+    lv.flours.push({ id: uid(), name: "", pct: null });
+    save(); rerenderInPlace();
+  }
+  else if (act === "lbdelflour"){
+    const lv = currentLevain(); if (!lv) return;
+    lv.flours = lv.flours.filter(x => x.id !== btn.dataset.row);
+    save(); rerenderInPlace();
+  }
+  else if (!r) { return; }
+  else if (act === "addrow"){
+    const sec = btn.dataset.sec;
+    const nrow = { id: uid(), name: "", grams: null, type: sec === "levain" ? "flour" : "other" };
+    if (sec === "dough") r.ingredients.push(nrow);
+    else if (sec === "levain") r.levain.rows.push(nrow);
+    else if (sec === "soaker"){
+      const s = r.soakers.find(s => s.id === btn.dataset.soaker);
+      if (s) s.rows.push(nrow);
+    }
+    save(); rerenderInPlace();
+  }
+  else if (act === "delrow"){
+    const sec = btn.dataset.sec, rid = btn.dataset.row;
+    if (sec === "dough") r.ingredients = r.ingredients.filter(x => x.id !== rid);
+    else if (sec === "levain") r.levain.rows = r.levain.rows.filter(x => x.id !== rid);
+    else if (sec === "soaker"){
+      const s = r.soakers.find(s => s.id === btn.dataset.soaker);
+      if (s) s.rows = s.rows.filter(x => x.id !== rid);
+    }
+    save(); rerenderInPlace();
+  }
+  else if (act === "togglelevain"){
+    r.levain.enabled = !r.levain.enabled;
+    if (r.levain.enabled && !r.levain.rows.length){
+      r.levain.rows = [
+        { id: uid(), name: "Bread flour", grams: null, type: "flour" },
+        { id: uid(), name: "Water", grams: null, type: "liquid" }
+      ];
+      if (r.levain.starterHydration == null) r.levain.starterHydration = 100;
+    }
+    save(); rerenderInPlace();
+  }
+  else if (act === "addsoaker"){
+    r.soakers.push({ id: uid(), name: "", rows: [
+      { id: uid(), name: "", grams: null, type: "other" },
+      { id: uid(), name: "Water", grams: null, type: "liquid" }
+    ]});
+    save(); rerenderInPlace();
+  }
+  else if (act === "delsoaker"){
+    if (confirm("Remove this soaker?")){
+      r.soakers = r.soakers.filter(s => s.id !== btn.dataset.soaker);
+      save(); rerenderInPlace();
+    }
+  }
+  else if (act === "applyhyd"){
+    const t = parseFloat(ui.hydTarget);
+    const z = document.getElementById("hydReadout");
+    if (!(t > 0)){
+      if (z) z.innerHTML = `<span style="color:var(--danger)">Enter a target hydration % first.</span>`;
+    } else {
+      const a = hydAdjust(r, t);
+      if (a.err){
+        if (z) z.innerHTML = `<span style="color:var(--danger)">${a.err}</span>`;
+      } else {
+        snapshotForUndo(r, "set true hydration to " + fp(t) + "%");
+        a.row.grams = Math.round(a.newG);
+        save(); rerenderInPlace();
+      }
+    }
+  }
+  else if (act === "addlog"){
+    const d = document.getElementById("logDate"), tx = document.getElementById("logText");
+    const text = (tx ? tx.value : "").trim();
+    if (!text) return;
+    if (!Array.isArray(r.log)) r.log = [];
+    r.log.push({ id: uid(), date: (d && d.value) || new Date().toISOString().slice(0,10), text });
+    save(); rerenderInPlace();
+  }
+  else if (act === "dellog"){
+    r.log = (r.log || []).filter(e => e.id !== btn.dataset.id);
+    save(); rerenderInPlace();
+  }
+  else if (act === "sendlevain"){
+    const st = levainStats(r);
+    if (!st || !st.total) return;
+    const flours = st.rows.filter(x => x.type === "flour");
+    const fsum = flours.reduce((s,x) => s + n(x.grams), 0);
+    const mix = flours.map(x => ({ id: uid(), name: x.name, pct: Math.round(n(x.grams) / fsum * 1000) / 10 }));
+    let lv = db.levains.find(x => x.id === r.levainLinkId);
+    if (!lv){
+      lv = defaultLevain();
+      lv.name = (r.name || "Untitled") + " levain";
+      db.levains.unshift(lv);
+      r.levainLinkId = lv.id;
+    }
+    lv.target = Math.round(st.total);
+    lv.hydration = Math.round(st.hyd * 10) / 10;
+    lv.starterHydration = n(r.levain.starterHydration) || 100;
+    lv.flours = mix;
+    lv.inoculation = st.inoc ? Math.round(st.inoc * 10) / 10 : null;
+    save();
+    ui.levainId = lv.id; ui.view = "lb"; render();
+  }
+  else if (act === "undo"){
+    if (ui.undo && ui.undo.recipeId === r.id){
+      const i = db.recipes.findIndex(x => x.id === r.id);
+      if (i >= 0) db.recipes[i] = ui.undo.data;
+      ui.undo = null;
+      save(); rerenderInPlace();
+    }
+  }
+  else if (act === "applylevhyd"){
+    const t = parseFloat(ui.levHydTarget);
+    const z = document.getElementById("levHydReadout");
+    if (!(t > 0)){
+      if (z) z.innerHTML = `<span style="color:var(--danger)">Enter a target levain hydration % first.</span>`;
+    } else {
+      const a = levHydAdjust(r, t);
+      if (a.err){
+        if (z) z.innerHTML = `<span style="color:var(--danger)">${esc(a.err)}</span>`;
+      } else {
+        snapshotForUndo(r, "set levain hydration to " + fp(t) + "%");
+        const lw = r.levain.rows.find(x => x.id === a.plan.levId); if (lw) lw.grams = a.plan.toLev;
+        const dw = r.ingredients.find(x => x.id === a.plan.doughId); if (dw) dw.grams = a.plan.toDough;
+        save(); rerenderInPlace();
+      }
+    }
+  }
+  else if (act === "applypff"){
+    const t = parseFloat(ui.pffTarget);
+    const z = document.getElementById("pffReadout");
+    if (!(t > 0)){
+      if (z) z.innerHTML = `<span style="color:var(--danger)">Enter a target pre-fermented flour % first.</span>`;
+    } else {
+      const a = pffAdjust(r, t);
+      if (a.err){
+        if (z) z.innerHTML = `<span style="color:var(--danger)">${esc(a.err)}</span>`;
+      } else {
+        snapshotForUndo(r, "set pre-fermented flour to " + fp(t) + "%");
+        applyPffPlan(r, a.plan);
+        save(); rerenderInPlace();
+      }
+    }
+  }
+  else if (act === "mult"){
+    ui.factor = parseFloat(btn.dataset.m) || 1;
+    rerenderInPlace();
+  }
+  else if (act === "scaleyield"){
+    const lg = parseFloat(document.getElementById("scLoaf").value);
+    const ct = parseFloat(document.getElementById("scCount").value);
+    const c = compute(r);
+    if (lg > 0 && ct > 0 && c.dough > 0){
+      ui.factor = (lg * ct) / c.dough;
+      r.yieldLoafG = lg; r.yieldCount = ct; save();
+      rerenderInPlace();
+    } else {
+      const z = document.getElementById("yieldReadout");
+      if (z) z.innerHTML = c.dough
+        ? `<span style="color:var(--danger)">Enter both a loaf weight and a loaf count, then press Scale.</span>`
+        : `<span style="color:var(--danger)">Add ingredient weights first — there's no dough to scale yet.</span>`;
+    }
+  }
+  else if (act === "scaleflour"){
+    const tf = parseFloat(document.getElementById("scFlour").value);
+    const c = compute(r);
+    if (tf > 0 && c.flour > 0){ ui.factor = tf / c.flour; rerenderInPlace(); }
+  }
+  else if (act === "resetscale"){ ui.factor = 1; rerenderInPlace(); }
+  else if (act === "bakein"){
+    const f = ui.factor;
+    snapshotForUndo(r, "saved weights scaled ×" + (Math.round(f*1000)/1000));
+    const scaleRow = x => { if (x.grams != null) x.grams = Math.round(n(x.grams) * f); };
+    (r.ingredients||[]).forEach(scaleRow);
+    if (r.levain){
+      (r.levain.rows||[]).forEach(scaleRow);
+      if (r.levain.starterGrams != null) r.levain.starterGrams = Math.round(n(r.levain.starterGrams) * f);
+    }
+    (r.soakers||[]).forEach(s => (s.rows||[]).forEach(scaleRow));
+    ui.factor = 1; save(); rerenderInPlace();
+  }
+  else if (act === "duplicate"){
+    const copy = JSON.parse(JSON.stringify(r));
+    copy.id = uid();
+    copy.name = (copy.name || "Untitled") + " (copy)";
+    copy.ingredients.forEach(x => x.id = uid());
+    if (copy.levain) copy.levain.rows.forEach(x => x.id = uid());
+    copy.soakers.forEach(s => { s.id = uid(); s.rows.forEach(x => x.id = uid()); });
+    db.recipes.unshift(copy); save();
+    ui.recipeId = copy.id; render();
+  }
+  else if (act === "delete"){
+    if (confirm("Delete this formula? This can't be undone.")){
+      db.recipes = db.recipes.filter(x => x.id !== r.id);
+      save();
+      ui.view = "library"; ui.recipeId = null; ui.factor = 1; render();
+    }
+  }
+});
+
+document.getElementById("importFile").addEventListener("change", e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(reader.result);
+      if (!data || !Array.isArray(data.recipes)) throw new Error("bad format");
+      let added = 0, updated = 0;
+      data.recipes.forEach(inc => {
+        const i = db.recipes.findIndex(x => x.id === inc.id);
+        if (i >= 0){ db.recipes[i] = inc; updated++; }
+        else { db.recipes.push(inc); added++; }
+      });
+      save(); render();
+      alert(`Import complete — ${added} added, ${updated} updated.`);
+    } catch(err){
+      alert("Couldn't read that file. It should be a JSON export from this tool.");
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = "";
+});
+
+render();
+
+// Offline support: register the service worker when served over http(s).
+if ("serviceWorker" in navigator && /^https?:/.test(location.protocol)){
+  navigator.serviceWorker.register("./sw.js").catch(() => {});
+}
+</script>
+</body>
+</html>
